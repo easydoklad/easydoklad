@@ -80,7 +80,7 @@ class UpdateInvoiceRequest extends FormRequest
             'supplier_address_line_two' => ['nullable', 'string', 'max:191'],
             'supplier_address_line_three' => ['nullable', 'string', 'max:191'],
             'supplier_address_city' => [$strict ? 'required' : 'nullable', 'string', 'max:191'],
-            'supplier_address_postal_code' => [$strict ? 'required' : 'nullable', 'string', 'max:191'],
+            'supplier_address_postal_code' => ['nullable', 'string', 'max:191'],
             'supplier_address_country' => [$strict ? 'required' : 'nullable', 'string', 'max:2', Rule::enum(Country::class)],
 
             'customer_business_name' => [$strict ? 'required' : 'nullable', 'string', 'max:191'],
@@ -95,7 +95,7 @@ class UpdateInvoiceRequest extends FormRequest
             'customer_address_line_two' => ['nullable', 'string', 'max:191'],
             'customer_address_line_three' => ['nullable', 'string', 'max:191'],
             'customer_address_city' => [$strict ? 'required' : 'nullable', 'string', 'max:191'],
-            'customer_address_postal_code' => [$strict ? 'required' : 'nullable', 'string', 'max:191'],
+            'customer_address_postal_code' => ['nullable', 'string', 'max:191'],
             'customer_address_country' => [$strict ? 'required' : 'nullable', 'string', 'max:2', Rule::enum(Country::class)],
             'template' => ['required', 'integer', 'min:1', function (string $attribute, int $value, Closure $fail) {
                 $account = $this->invoice()->account;
