@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Feature::define('expenses', fn (User $user) => match (true) {
-            in_array($user->email, ['peter@peterstovka.com', 'ps@stacktrace.sk']) => true,
+            // in_array($user->email, ['peter@peterstovka.com', 'ps@stacktrace.sk']) => true,
             default => false,
         });
     }
