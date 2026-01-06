@@ -77,7 +77,7 @@
     <FormControl
       label="Poznámka v pätičke"
       :error="form.errors.footer_note"
-      help="Tu môžete uviesť poznámku o zápise spoločnosti v obchodnom registri."
+      :help="!locked ? 'Tu môžete uviesť poznámku o zápise spoločnosti v obchodnom registri.' : undefined"
       hide-error
     >
       <FormInlineError>

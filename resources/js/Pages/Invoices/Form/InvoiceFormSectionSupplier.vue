@@ -65,7 +65,7 @@
     <FormControl
       label="Doplňujúce informácie"
       :error="form.errors.supplier_additional_info"
-      help="Vyplňte ak potrebujete uviesť ďalšie informácie k dodávateľovi."
+      :help="!locked ? 'Vyplňte ak potrebujete uviesť ďalšie informácie k dodávateľovi.' : undefined"
       hide-error
     >
       <FormInlineError>
