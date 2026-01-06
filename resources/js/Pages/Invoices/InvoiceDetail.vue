@@ -115,27 +115,39 @@
           </div>
         </div>
 
-        <div class="space-y-12">
-          <div class="grid grid-cols-2 gap-8">
-            <InvoiceFormSectionNumbering />
+        <Tabs default-value="general">
+          <TabsList v-if="locked">
+            <TabsTrigger value="general">Faktúra</TabsTrigger>
+            <TabsTrigger value="payments">Úhrady</TabsTrigger>
+          </TabsList>
+          <TabsContent value="general">
+            <div class="space-y-12 mt-4">
+              <div class="grid grid-cols-2 gap-8">
+                <InvoiceFormSectionNumbering />
 
-            <InvoiceFormSectionDates />
-          </div>
+                <InvoiceFormSectionDates />
+              </div>
 
-          <div class="grid grid-cols-2 gap-8">
-            <InvoiceFormSectionSupplier />
+              <div class="grid grid-cols-2 gap-8">
+                <InvoiceFormSectionSupplier />
 
-            <InvoiceFormSectionCustomer />
-          </div>
+                <InvoiceFormSectionCustomer />
+              </div>
 
-          <InvoiceFormSectionLines />
+              <InvoiceFormSectionLines />
 
-          <div class="grid grid-cols-2 gap-8">
-            <InvoiceFormSectionSettings />
+              <div class="grid grid-cols-2 gap-8">
+                <InvoiceFormSectionSettings />
 
-            <InvoiceFormSectionPayment />
-          </div>
-        </div>
+                <InvoiceFormSectionPayment />
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="payments">
+            <p>platby</p>
+          </TabsContent>
+        </Tabs>
+
       </div>
 
       <SendInvoiceDialog
@@ -159,6 +171,7 @@
 <script setup lang="ts">
 import { Badge } from "@/Components/Badge";
 import { useConfirmable } from "@/Components/ConfirmationDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/Tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/Components/Tooltip";
 import { asyncRouter, useToggle } from "@stacktrace/ui";
 import InvoiceFormSectionCustomer from "./Form/InvoiceFormSectionCustomer.vue";
