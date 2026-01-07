@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('account_id')->constrained('accounts');
             $table->morphs('payable');
             $table->unsignedBigInteger('amount');
             $table->string('currency', 3);
@@ -25,6 +26,7 @@ return new class extends Migration
         Invoice::query()->eachById(function (Invoice $invoice) {
             if ($invoice->paid && ($amount = $invoice->getAmountToPay())) {
                 $invoice->payments()->create([
+                    'account_id' => $invoice->account()->getParentKey(),
                     'amount' => $amount,
                     'received_at' => $invoice->updated_at,
                     'method' => PaymentMethod::BankTransfer,

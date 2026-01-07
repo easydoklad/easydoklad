@@ -1,3 +1,4 @@
+import type { DataTableValue } from '@/Components/DataTable'
 import type { InvoiceLine } from "@/Components/InvoiceLineInput";
 import type { SelectOption } from "@stacktrace/ui";
 
@@ -60,6 +61,7 @@ export interface InvoiceDetailProps {
     total: number
   }>
   isPaymentDue: boolean
+  isPartiallyPaid: boolean
   remainingToPay: number | null
 
   countries: Array<SelectOption>
@@ -78,4 +80,5 @@ export interface InvoiceDetailProps {
   mailMessage: string | null
 
   templateLocales: Array<SelectOption>
+  payments: DataTableValue
 }

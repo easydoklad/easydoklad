@@ -9,15 +9,12 @@ use App\Models\Invoice;
 use App\Support\MoneyUtils;
 use App\Tables\Actions\DiscardInvoiceDraftAction;
 use App\Tables\Actions\DuplicateInvoiceAction;
-use App\Tables\Actions\MarkInvoiceAsPaidAction;
 use App\Tables\Actions\MarkInvoiceAsSentAction;
 use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 use StackTrace\Ui\DateRange;
 use StackTrace\Ui\Link;
 use StackTrace\Ui\NumberValue;
@@ -43,10 +40,8 @@ class InvoiceTable extends Table
         });
 
         $this->searchable(function (Builder $builder, string $term) {
-            $term = Str::lower($term);
-
             $builder->whereHas('customer', function (Builder $builder) use ($term) {
-                $builder->where(DB::raw('lower(business_name)'), 'like', '%'.$term.'%');
+                $builder->where('business_name', 'like', '%'.$term.'%');
             });
         });
 
@@ -64,6 +59,15 @@ class InvoiceTable extends Table
     public function source(): Builder
     {
         $builder = $this->source ?: Invoice::query();
+
+        $builder
+            ->with([
+                'account.company',
+                'customer',
+                'payments',
+            ])
+            // ->withSum('payments', 'amount')
+        ;
 
         return $builder;
     }
@@ -97,19 +101,27 @@ class InvoiceTable extends Table
                     return 'issued';
                 }
 
-                return $invoice->isPaymentDue() ? 'unpaid' : 'sent';
+                if ($invoice->isPaymentDue()) {
+                    return $invoice->isPartiallyPaid() ? 'partiallyUnpaid' : 'unpaid';
+                } else {
+                    return $invoice->isPartiallyPaid() ? 'partiallyPaid' : 'sent';
+                }
             })->label([
                 'draft' => 'Koncept',
                 'issued' => 'Vystavená',
                 'sent' => 'Odoslaná',
                 'paid' => 'Uhradená',
                 'unpaid' => 'Po splatnosti',
+                'partiallyUnpaid' => 'Čiastočne uhradená',
+                'partiallyPaid' => 'Čiastočne uhradená',
             ])->variant([
                 'draft' => 'outline',
                 'issued' => 'secondary',
                 'sent' => 'warning',
                 'paid' => 'positive',
                 'unpaid' => 'destructive',
+                'partiallyUnpaid' => 'destructive',
+                'partiallyPaid' => 'warning',
             ])->width(32),
 
             Columns\Date::make('Dodaná', 'supplied_at')
@@ -203,6 +215,7 @@ class InvoiceTable extends Table
 
             Filters\Select::make('Úhrada', 'payment', [
                 new SelectOption('Uhradená', 'paid'),
+                // new SelectOption('Čiastočne uhradená', 'partiallyPaid'),
                 new SelectOption('Neuhradená', 'unpaid'),
             ])->using(function (Builder $builder, array $selection) {
                 $values = collect($selection)->map->value;

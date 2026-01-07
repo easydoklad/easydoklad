@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \App\Models\User $recordedBy
  * @property PaymentMethod $method
  * @property \Carbon\Carbon $received_at
+ * @property \App\Models\Account $account
  */
 class Payment extends Model
 {
@@ -27,6 +28,20 @@ class Payment extends Model
         'method' => PaymentMethod::class,
         'received_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleted(function (Payment $payment) {
+            if ($payment->payable instanceof Invoice) {
+                $payment->payable->syncPaidState();
+            }
+        });
+    }
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
 
     public function payable(): MorphTo
     {

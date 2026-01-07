@@ -29,7 +29,8 @@
               <Badge v-if="sent" variant="secondary"><SendIcon /> Odoslaná </Badge>
               <Badge v-if="paid" variant="positive"><CheckIcon /> Uhradená </Badge>
 
-              <Badge v-if="sent && !paid && isPaymentDue" variant="destructive"><CalendarClockIcon /> Po splatnosti</Badge>
+              <Badge v-if="sent && !paid && isPaymentDue" variant="destructive"><CalendarClockIcon /> {{ isPartiallyPaid ? 'Čiastočne uhradená' : 'Po splatnosti' }}</Badge>
+              <Badge v-else-if="sent && !paid && !isPaymentDue && isPartiallyPaid" variant="warning"><CalendarClockIcon /> Čiastočne úhradená</Badge>
             </div>
           </div>
 
@@ -144,7 +145,15 @@
             </div>
           </TabsContent>
           <TabsContent value="payments">
-            <p>platby</p>
+            <DataTable
+              :table="payments"
+              empty-table-message="Žiadne úhrady"
+              empty-table-description="Zatiaľ neboli zaznamenané žiadne úhrady."
+            >
+              <template #empty-table>
+                <Button @click="showAddPaymentDialog" variant="outline" size="sm" label="Pridať úhradu" class="mt-4" :icon="BanknoteIcon" />
+              </template>
+            </DataTable>
           </TabsContent>
         </Tabs>
 
@@ -201,6 +210,7 @@ import { Head, router, useForm } from "@inertiajs/vue3"
 import { LanguagesIcon, CalendarClockIcon, FilesIcon, Trash2Icon, MailCheckIcon, MailXIcon, CheckIcon, SaveIcon, SendIcon, FileDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
 import { computed, ref } from "vue"
 import { toast } from "vue-sonner"
+import { DataTable } from '@/Components/DataTable'
 
 const props = defineProps<InvoiceDetailProps>()
 

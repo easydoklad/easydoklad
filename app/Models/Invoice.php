@@ -319,6 +319,18 @@ class Invoice extends Model
     }
 
     /**
+     * Determine whether invoice is partially paid.
+     */
+    public function isPartiallyPaid(): bool
+    {
+        if (($remaining = $this->getRemainingAmountToPay()) && ($toPay = $this->getAmountToPay())) {
+            return $remaining->isPositive() && !$remaining->isEqualTo($toPay);
+        }
+
+        return false;
+    }
+
+    /**
      * Get full amount of the invoice which needs to be paid.
      */
     public function getAmountToPay(): ?Money
@@ -512,21 +524,34 @@ class Invoice extends Model
             'received_at' => $receivedAt,
         ]);
         $payment->recordedBy()->associate($recordedBy);
+        $payment->account()->associate($this->account);
 
         $payment->save();
 
         $this->load('payments');
 
+        $this->syncPaidState();
+
+        return $payment;
+    }
+
+    /**
+     * Sync the paid state based on added payments.
+     */
+    public function syncPaidState(): void
+    {
         $paidAmount = MoneyUtils::sum($this->currency, ...$this->payments->map->amount);
 
         $toPay = $this->getAmountToPay();
 
-        if ($paidAmount->isGreaterThanOrEqualTo($toPay) && !$this->paid) {
+        $shouldBePaid = $paidAmount->isGreaterThanOrEqualTo($toPay);
+
+        if ($shouldBePaid && !$this->paid) {
             $this->update(['paid' => true]);
 
             event(new InvoicePaid($this->withoutRelations()));
+        } else if (!$shouldBePaid && $this->paid) {
+            $this->update(['paid' => false]);
         }
-
-        return $payment;
     }
 }
