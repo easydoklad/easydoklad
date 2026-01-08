@@ -16,6 +16,15 @@ declare module 'vite/client' {
 }
 
 declare module '@inertiajs/core' {
+  export interface InertiaConfig {
+    flashDataType: {
+      completeBankMailIntegration?: {
+        email: string
+        helpLink: string | null
+      }
+    }
+  }
+
   interface PageProps extends InertiaPageProps, AppPageProps {
     toasts: Array<BackendToast>
   }
