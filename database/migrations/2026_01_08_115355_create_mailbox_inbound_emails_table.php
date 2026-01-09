@@ -6,22 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateMailboxInboundEmailsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create('mailbox_inbound_emails', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->string('message_id');
             $table->longText('message');
             $table->nullableTimestamps();
         });
     }
-    /**
-     * Reverse the migrations.
-     */
-    public function down()
+
+    public function down(): void
     {
         Schema::dropIfExists('mailbox_inbound_emails');
     }
