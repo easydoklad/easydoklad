@@ -9,15 +9,13 @@ use App\Models\Invoice;
 use App\Support\MoneyUtils;
 use App\Tables\Actions\DiscardInvoiceDraftAction;
 use App\Tables\Actions\DuplicateInvoiceAction;
-use App\Tables\Actions\MarkInvoiceAsPaidAction;
 use App\Tables\Actions\MarkInvoiceAsSentAction;
 use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 use StackTrace\Ui\DateRange;
 use StackTrace\Ui\Link;
 use StackTrace\Ui\NumberValue;
@@ -43,10 +41,8 @@ class InvoiceTable extends Table
         });
 
         $this->searchable(function (Builder $builder, string $term) {
-            $term = Str::lower($term);
-
             $builder->whereHas('customer', function (Builder $builder) use ($term) {
-                $builder->where(DB::raw('lower(business_name)'), 'like', '%'.$term.'%');
+                $builder->where('business_name', 'like', '%'.$term.'%');
             });
         });
 
@@ -59,11 +55,25 @@ class InvoiceTable extends Table
         });
 
         $this->perPageOptions([25, 50, 100, 200]);
+
+        $this->mapResource(function (Invoice $invoice) {
+            return [
+                'id' => $invoice->uuid,
+                'remainingToPay' => $invoice->remaining_to_pay?->getMinorAmount(),
+                'paymentMethod' => $invoice->payment_method?->value,
+            ];
+        });
     }
 
     public function source(): Builder
     {
         $builder = $this->source ?: Invoice::query();
+
+        $builder->with([
+            'account.company',
+            'customer',
+            'payments',
+        ]);
 
         return $builder;
     }
@@ -97,19 +107,27 @@ class InvoiceTable extends Table
                     return 'issued';
                 }
 
-                return $invoice->isPaymentDue() ? 'unpaid' : 'sent';
+                if ($invoice->isPaymentDue()) {
+                    return $invoice->isPartiallyPaid() ? 'partiallyUnpaid' : 'unpaid';
+                } else {
+                    return $invoice->isPartiallyPaid() ? 'partiallyPaid' : 'sent';
+                }
             })->label([
                 'draft' => 'Koncept',
                 'issued' => 'Vystavená',
                 'sent' => 'Odoslaná',
                 'paid' => 'Uhradená',
                 'unpaid' => 'Po splatnosti',
+                'partiallyUnpaid' => 'Čiastočne uhradená',
+                'partiallyPaid' => 'Čiastočne uhradená',
             ])->variant([
                 'draft' => 'outline',
                 'issued' => 'secondary',
                 'sent' => 'warning',
                 'paid' => 'positive',
                 'unpaid' => 'destructive',
+                'partiallyUnpaid' => 'destructive',
+                'partiallyPaid' => 'warning',
             ])->width(32),
 
             Columns\Date::make('Dodaná', 'supplied_at')
@@ -147,13 +165,13 @@ class InvoiceTable extends Table
     public function actions(): array
     {
         return [
-            Actions\Link::make('Zobraziť', fn (Invoice $invoice) => Link::to(route('invoices.show', $invoice)))
+            Actions\Link::make('Zobraziť', fn (Invoice $invoice) => route('invoices.show', $invoice))
                 ->can(fn (Invoice $invoice) => Gate::allows('view', $invoice)),
 
             MarkInvoiceAsSentAction::make()
                 ->can(fn (Invoice $invoice) => Gate::allows('update', $invoice) && !$invoice->draft && !$invoice->sent),
 
-            MarkInvoiceAsPaidAction::make()
+            Actions\Event::make('Pridať úhradu', 'addPayment')
                 ->can(fn (Invoice $invoice) => Gate::allows('update', $invoice) && !$invoice->draft && !$invoice->paid),
 
             DuplicateInvoiceAction::make()
@@ -203,17 +221,22 @@ class InvoiceTable extends Table
 
             Filters\Select::make('Úhrada', 'payment', [
                 new SelectOption('Uhradená', 'paid'),
+                new SelectOption('Čiastočne uhradená', 'partiallyPaid'),
                 new SelectOption('Neuhradená', 'unpaid'),
             ])->using(function (Builder $builder, array $selection) {
                 $values = collect($selection)->map->value;
 
                 $builder->where(function (Builder $builder) use ($values) {
                     if ($values->contains('paid')) {
-                        $builder->orWhere('paid', true);
+                        $builder->orWhere(fn (Builder $builder) => $builder->where('paid', true)->where('remaining_to_pay', 0));
                     }
 
                     if ($values->contains('unpaid')) {
-                        $builder->orWhere('paid', false);
+                        $builder->orWhere(fn (Builder $builder) => $builder->where('paid', false)->whereColumn('remaining_to_pay', '=', 'total_to_pay'));
+                    }
+
+                    if ($values->contains('partiallyPaid')) {
+                        $builder->orWhere(fn (Builder $builder) => $builder->where('paid', false)->whereColumn('remaining_to_pay', '!=', 'total_to_pay'));
                     }
                 });
             }),

@@ -2,6 +2,8 @@
 
 return [
 
+    'mailbox_domain' => env('MAILBOX_DOMAIN', 'example.com'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

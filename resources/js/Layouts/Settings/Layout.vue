@@ -19,6 +19,10 @@
               title: 'Faktúry',
               action: { route: 'settings.invoices.edit' },
             },
+            {
+              title: 'Bankové transakcie',
+              action: { route: 'settings.bank-transactions' },
+            },
           ]"
           orientation="vertical"
           variant="ghost"

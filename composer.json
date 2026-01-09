@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "beyondcode/laravel-mailbox": "^5.0",
         "brick/money": "^0.10.1",
         "bysqr/bysqr": "^0.0.2",
         "inertiajs/inertia-laravel": "^2.0",

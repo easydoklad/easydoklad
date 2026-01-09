@@ -32,4 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('settings/invoices', [InvoiceController::class, 'update'])->name('invoices.settings.update');
     Route::patch('settings/invoices/signature', ChangeInvoiceSignatureController::class)->name('invoices.settings.signature');
     Route::patch('settings/invoices/logo', ChangeInvoiceLogoController::class)->name('invoices.settings.logo');
+
+    Route::get('settings/bank-transactions', \App\Http\Controllers\Settings\BankTransactionsController::class)->name('settings.bank-transactions');
+    Route::post('settings/bank-transaction-accounts', [\App\Http\Controllers\Settings\BankTransactionAccountController::class, 'store'])->name('bank-transaction-accounts.store');
+    Route::delete('settings/bank-transaction-accounts/{account:uuid}', [\App\Http\Controllers\Settings\BankTransactionAccountController::class, 'destroy'])->name('bank-transaction-accounts.destroy');
 });

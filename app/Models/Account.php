@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\NumberSequence> $numberSequences
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property string|null $invoice_mail_message
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\BankTransactionAccount> $bankTransactionAccounts
  */
 class Account extends Model
 {
@@ -77,6 +78,11 @@ class Account extends Model
     public function invoiceTemplate(): BelongsTo
     {
         return $this->belongsTo(DocumentTemplate::class);
+    }
+
+    public function bankTransactionAccounts(): HasMany
+    {
+        return $this->hasMany(BankTransactionAccount::class);
     }
 
     /**

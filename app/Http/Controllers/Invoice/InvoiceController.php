@@ -13,14 +13,18 @@ use App\Models\Company;
 use App\Models\DocumentTemplate;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
+use App\Models\Payment;
 use App\Support\Locale;
 use App\Support\VatBreakdownLine;
+use App\Tables\Actions\DeletePaymentAction;
 use App\Tables\InvoiceTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use StackTrace\Ui\SelectOption;
+use StackTrace\Ui\Table;
+use StackTrace\Ui\Table\Columns;
 
 class InvoiceController
 {
@@ -38,6 +42,7 @@ class InvoiceController
 
         return Inertia::render('Invoices/InvoiceList', [
             'invoices' => $invoices,
+            'paymentMethods' => PaymentMethod::options(),
         ]);
     }
 
@@ -65,6 +70,20 @@ class InvoiceController
         ];
 
         $currency = $invoice->getCurrency();
+
+        $payments = Table::make($invoice->payments)
+            ->withColumns([
+                Columns\Text::make('Spôsob úhrady', fn (Payment $payment) => $payment->method->label()),
+
+                Columns\Text::make('Suma', fn (Payment $payment) => $payment->amount->formatTo($account->getMoneyFormattingLocale()))
+                    ->alignRight()
+                    ->numsTabular(),
+
+                Columns\Date::make('Dátum úhrady', fn (Payment $payment) => $payment->received_at),
+            ])
+            ->withActions([
+                DeletePaymentAction::make()->can(fn (Payment $payment) => Gate::allows('delete', $payment)),
+            ]);
 
         return Inertia::render('Invoices/InvoiceDetail', [
             'id' => $invoice->uuid,
@@ -116,6 +135,7 @@ class InvoiceController
             ]),
             'totalVatInclusive' => $invoice->total_vat_inclusive?->getMinorAmount(),
             'totalVatExclusive' => $invoice->total_vat_exclusive?->getMinorAmount(),
+            'remainingToPay' => $invoice->remaining_to_pay?->getMinorAmount(),
 
             'countries' => Country::options(),
             'paymentMethods' => PaymentMethod::options(),
@@ -127,6 +147,7 @@ class InvoiceController
                 ->map(fn (string $locale) => new SelectOption(Locale::name($locale), $locale)),
             'mailMessage' => $account->invoice_mail_message,
             'isPaymentDue' => $invoice->isPaymentDue(),
+            'isPartiallyPaid' => $invoice->isPartiallyPaid(),
 
             // TODO: konfigurovateľne
             'thousandsSeparator' => '',
@@ -140,7 +161,9 @@ class InvoiceController
             'currency' => [
                 'code' => $currency->getCurrencyCode(),
                 'symbol' => '€', // TODO: urobiť konfigurovateľne
-            ]
+            ],
+
+            'payments' => $payments,
         ]);
     }
 

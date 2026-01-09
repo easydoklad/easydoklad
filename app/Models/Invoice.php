@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\AsMoney;
 use App\Enums\PaymentMethod;
+use App\Events\InvoicePaid;
 use App\Mail\SendInvoiceMail;
 use App\Models\Concerns\HasUuid;
 use App\Support\MoneyUtils;
@@ -17,13 +18,16 @@ use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Bysqr\BankAccount;
 use Bysqr\Pay;
-use Bysqr\Payment;
+use Bysqr\Payment as PendingPayment;
 use Bysqr\PaymentOption;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -61,6 +65,9 @@ use RuntimeException;
  * @property int $invoice_number
  * @property Money|null $total_vat_inclusive
  * @property Money|null $total_vat_exclusive
+ * @property Money|null $total_to_pay
+ * @property Money|null $remaining_to_pay
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
  */
 class Invoice extends Model
 {
@@ -84,6 +91,8 @@ class Invoice extends Model
             'vat_enabled' => 'boolean',
             'total_vat_inclusive' => AsMoney::class,
             'total_vat_exclusive' => AsMoney::class,
+            'total_to_pay' => AsMoney::class,
+            'remaining_to_pay' => AsMoney::class,
         ];
     }
 
@@ -91,6 +100,7 @@ class Invoice extends Model
     {
         static::deleting(function (Invoice $invoice) {
             $invoice->lines->each->delete();
+            $invoice->payments->each->delete();
         });
 
         static::deleted(function (Invoice $invoice) {
@@ -139,6 +149,11 @@ class Invoice extends Model
         return $this->belongsTo(DocumentTemplate::class);
     }
 
+    public function payments(): MorphMany
+    {
+        return $this->morphMany(Payment::class, 'payable');
+    }
+
     /**
      * Get lines sorted by a position attribute.
      *
@@ -154,12 +169,29 @@ class Invoice extends Model
      */
     public function calculateTotals(): void
     {
-        $sum = fn (Collection $prices) => Money::total(Money::zero($this->currency), ...$prices->filter()->values());
+        $sum = fn (Collection $prices) => MoneyUtils::sum($this->currency, ...$prices->filter()->values());
 
         $this->total_vat_inclusive = $sum($this->lines->map->total_price_vat_inclusive);
         $this->total_vat_exclusive = $sum($this->lines->map->total_price_vat_exclusive);
+        $this->total_to_pay = $this->calculateTotalToPay();
+        $this->remaining_to_pay = $this->calculateRemainingToPay();
+
+        $recentlyPaid = false;
+
+        if ($this->remaining_to_pay) {
+            if ($this->remaining_to_pay->isZero() && !$this->paid) {
+                $this->paid = true;
+                $recentlyPaid = true;
+            } else if (!$this->remaining_to_pay->isZero() && $this->paid) {
+                $this->paid = false;
+            }
+        }
 
         $this->save();
+
+        if ($recentlyPaid) {
+            event(new InvoicePaid($this->withoutRelations()));
+        }
     }
 
     /**
@@ -211,7 +243,7 @@ class Invoice extends Model
     /**
      * Add edit lock on the invoice.
      */
-    public function lock(): void
+    public function preventModifications(): void
     {
         if ($this->draft) {
             throw new RuntimeException("The invoice draft cannot be locked");
@@ -224,7 +256,7 @@ class Invoice extends Model
     /**
      * Remove edit lock from the invoice.
      */
-    public function unlock(): void
+    public function allowModifications(): void
     {
         $this->locked = false;
         $this->save();
@@ -305,9 +337,17 @@ class Invoice extends Model
     }
 
     /**
-     * Get full amount of the invoice which needs to be paid.
+     * Determine whether invoice is partially paid.
      */
-    public function getAmountToPay(): ?Money
+    public function isPartiallyPaid(): bool
+    {
+        return $this->remaining_to_pay && $this->total_to_pay && !$this->remaining_to_pay->isZero() && !$this->total_to_pay->isEqualTo($this->remaining_to_pay);
+    }
+
+    /**
+     * Calculate final amount of the invoice which needs to be paid.
+     */
+    protected function calculateTotalToPay(): ?Money
     {
         if (! $this->vat_enabled) {
             return $this->total_vat_exclusive;
@@ -321,14 +361,28 @@ class Invoice extends Model
     }
 
     /**
+     * Calculate amount which is remaining to be paid.
+     */
+    protected function calculateRemainingToPay(): ?Money
+    {
+        if ($amount = $this->calculateTotalToPay()) {
+            $paid = MoneyUtils::sum($this->currency, ...$this->payments->map->amount);
+
+            return Money::max(Money::zero($this->currency), $amount->minus($paid));
+        }
+
+        return null;
+    }
+
+    /**
      * Get a Pay By Square Pay configuration.
      */
     public function getPayBySquare(): ?Pay
     {
-        if (($amount = $this->getAmountToPay()) && ($iban = $this->supplier->bank_account_iban)) {
+        if (($amount = $this->total_to_pay) && ($iban = $this->supplier->bank_account_iban)) {
             return new Pay(
                 payments: [
-                    new Payment(
+                    new PendingPayment(
                         paymentOptions: PaymentOption::PAYMENT_ORDER,
                         amount: $amount->getAmount()->toFloat(),
                         currencyCode: $amount->getCurrency()->getCurrencyCode(),
@@ -452,5 +506,46 @@ class Invoice extends Model
         }
 
         return $invoice;
+    }
+
+    /**
+     * Execute given callback while locking the invoice.
+     *
+     * @template TReturn
+     *
+     * @param (callable(\App\Models\Invoice): (TReturn)) $callback
+     * @param int $for
+     * @param int $block
+     *
+     * @return TReturn
+     *
+     * @throws \Illuminate\Contracts\Cache\LockTimeoutException
+     */
+    public function whileLocked(callable $callback, int $for = 10, int $block = 5)
+    {
+        return Cache::lock('Invoice'.$this->id, $for)->block($block, fn () => $callback($this));
+    }
+
+    /**
+     * Add a payment to the invoice.
+     */
+    public function addPayment(Money $amount, PaymentMethod $method, Carbon $receivedAt, ?User $recordedBy = null): Payment
+    {
+        /** @var \App\Models\Payment $payment */
+        $payment = $this->payments()->make([
+            'amount' => $amount,
+            'method' => $method,
+            'received_at' => $receivedAt,
+        ]);
+        $payment->recordedBy()->associate($recordedBy);
+        $payment->account()->associate($this->account);
+
+        $payment->save();
+
+        $this->load('payments');
+
+        $this->calculateTotals();
+
+        return $payment;
     }
 }
