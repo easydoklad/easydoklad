@@ -169,7 +169,7 @@ class Invoice extends Model
     {
         $formatter = new NumberSequenceFormatter(
             format: $this->account->invoice_numbering_format,
-            date: $this->issued_at,
+            date: $this->supplied_at,
         );
 
         $sequenceToken = $formatter->formatSequenceToken();
@@ -190,7 +190,7 @@ class Invoice extends Model
         if (! $this->variable_symbol) {
             $variableSymbolFormatter = new NumberSequenceFormatter(
                 format: $this->account->invoice_variable_symbol_format,
-                date: $this->issued_at,
+                date: $this->supplied_at,
             );
 
             $this->variable_symbol = $variableSymbolFormatter->formatNumber($sequence->next_number);
