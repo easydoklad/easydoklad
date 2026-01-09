@@ -85,6 +85,11 @@ class Account extends Model
         return $this->hasMany(BankTransactionAccount::class);
     }
 
+    public function bankTransactions(): HasMany
+    {
+        return $this->hasMany(BankTransaction::class);
+    }
+
     /**
      * Get the account currency.
      */

@@ -13,7 +13,6 @@ use App\Tables\Actions\MarkInvoiceAsSentAction;
 use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use StackTrace\Ui\DateRange;
@@ -89,6 +88,8 @@ class InvoiceTable extends Table
                 } else {
                     $style->fontMedium();
                 }
+
+                $style->numsTabular();
             })->link(fn (Invoice $invoice) => Link::to(route('invoices.show', $invoice))->show(Gate::allows('view', $invoice))),
 
             Columns\Text::make('Klient', fn (Invoice $invoice) => $invoice->customer->business_name)

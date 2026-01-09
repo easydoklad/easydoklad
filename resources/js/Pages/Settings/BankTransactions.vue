@@ -4,7 +4,7 @@
 
     <SettingsLayout>
       <section class="space-y-6">
-        <HeadingSmall title="Bankové účty" description="Pripojte si bankové účty z podporovaných bánk a nechajte easyDoklad automaticky párovať úhrady faktúr."/>
+        <HeadingSmall title="Bankové účty" description="Prepojte bankové účty z podporovaných bánk a majte transakcie aj úhrady dokladov vždy automaticky spárované."/>
 
         <div v-if="bankAccounts.length === 0" class="flex flex-col border items-center justify-center gap-4 px-6 py-12 border-dashed rounded-md">
           <p class="text-sm">Zatiaľ nemáte pripojené žiadne bankové účty.</p>

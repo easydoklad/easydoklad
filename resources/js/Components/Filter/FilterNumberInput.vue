@@ -23,26 +23,26 @@
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="lt">less than</SelectItem>
-            <SelectItem value="lte">less then or equal</SelectItem>
-            <SelectItem value="eq">equal to</SelectItem>
-            <SelectItem value="gte">greater than or equal</SelectItem>
-            <SelectItem value="gt">greater than</SelectItem>
-            <SelectItem value="be">between</SelectItem>
-            <SelectItem value="nbe">not between</SelectItem>
+            <SelectItem value="lt">menej ako</SelectItem>
+            <SelectItem value="lte">menej alebo rovné ako</SelectItem>
+            <SelectItem value="eq">rovné ako</SelectItem>
+            <SelectItem value="gte">viac alebo rovné ako</SelectItem>
+            <SelectItem value="gt">viac ako</SelectItem>
+            <SelectItem value="be">je medzi</SelectItem>
+            <SelectItem value="nbe">nie je medzi</SelectItem>
           </SelectContent>
         </Select>
 
         <div class="grid grid-cols-2 gap-2" v-if="operator == 'be' || operator == 'nbe'">
-          <Input type="number" placeholder="From" v-model="inputFrom" class="h-7" />
-          <Input type="number" placeholder="To" v-model="inputTo" class="h-7" @keydown.enter="open = false" />
+          <Input type="number" placeholder="Od" v-model="inputFrom" class="h-7" />
+          <Input type="number" placeholder="Do" v-model="inputTo" class="h-7" @keydown.enter="open = false" />
         </div>
 
-        <Input v-else type="number" placeholder="Value" v-model="input" class="h-7" @keydown.enter="open = false" />
+        <Input v-else type="number" placeholder="Hodnota" v-model="input" class="h-7" @keydown.enter="open = false" />
       </div>
 
       <div class="border-t p-1">
-        <Button @click="clear" size="sm" class="w-full" variant="ghost">Clear</Button>
+        <Button @click="clear" size="sm" class="w-full" variant="ghost">Vymazať</Button>
       </div>
     </PopoverContent>
   </Popover>

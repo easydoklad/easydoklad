@@ -4,15 +4,44 @@
 namespace App\Services;
 
 
+use App\Banking\Camt053Parser;
 use App\Banking\PendingTransaction;
 use App\Enums\PaymentMethod;
+use App\Models\Account;
 use App\Models\BankTransaction;
 use App\Models\BankTransactionAccount;
 use App\Models\Invoice;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
 
 class BankingService extends Facade
 {
+    /**
+     * Record transactions from a CAMT.053 source.
+     *
+     * @return \Illuminate\Support\Collection<int, BankTransaction>
+     */
+    public function recordTransactionsFromCamt(Account $account, string $camtXmlContent, bool $ignoreDuplicate = true): Collection
+    {
+        $bankAccounts = $account->bankTransactionAccounts;
+
+        if ($bankAccounts->isEmpty()) {
+            return collect();
+        }
+
+        return (new Camt053Parser($camtXmlContent))
+            ->getTransactions()
+            ->map(function (PendingTransaction $transaction) use ($bankAccounts, $ignoreDuplicate) {
+                if ($bankAccount = $bankAccounts->firstWhere('iban', $transaction->receivedToIban)) {
+                    return $this->recordTransaction($bankAccount, $transaction, $ignoreDuplicate);
+                }
+
+                return null;
+            })
+            ->filter()
+            ->values();
+    }
+
     /**
      * Record a new bank transaction.
      */

@@ -1,7 +1,7 @@
 export default {
   searchPlaceholder: 'Hľadať…',
-  emptyTableTitle: 'Nothing to see there.',
-  emptyTableDescription: 'The table is empty.',
+  emptyTableTitle: 'Nič tu nie je.',
+  emptyTableDescription: 'Tento zoznam je prázdny.',
   selectedRows: (selected: number, total: number) => `Vybrané ${selected} z ${total}`,
   actions: 'Akcie',
   cancelSelection: 'Zrušiť výber',
@@ -12,7 +12,7 @@ export default {
   paginatorOf: 'z',
   paginatorPrevious: 'Predchádzajúca',
   paginatorNext: 'Ďalšia',
-  searchEmptyTitle: 'No records found.',
-  searchEmptyDescription: 'Try to adjust your search criteria.',
-  clearSearch: 'Clear Search',
+  searchEmptyTitle: 'Žiadne výsledky.',
+  searchEmptyDescription: 'Skúste zmeniť vyhľadávacie kritéria.',
+  clearSearch: 'Vymazať filter',
 }

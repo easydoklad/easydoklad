@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Banking\BankTransactionController;
+use App\Http\Controllers\Banking\CamtImportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Expenses\ExpenseController;
 use App\Http\Controllers\HomeController;
@@ -39,6 +41,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/invoices/{invoice:uuid}/send', SendController::class)->name('invoices.send')->middleware('throttle:mail');
     Route::post('/invoices/{invoice:uuid}/duplicate', DuplicateController::class)->name('invoices.duplicate');
     Route::post('/invoices/{invoice:uuid}/payments', [PaymentController::class, 'store'])->name('invoices.payments.store');
+
+    Route::get('/bank-transactions', [BankTransactionController::class, 'index'])->name('bank-transactions');
+    Route::post('/bank-transactions/camt-import', CamtImportController::class)->name('bank-transactions.camt-import');
 
     Route::post('/files', [TemporaryUploadController::class, 'store'])->name('files.store');
 

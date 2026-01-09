@@ -1,5 +1,5 @@
 <template>
-  <Input :debounce="300" v-model="value" placeholder="Search…" class="h-8 w-[250px]" />
+  <Input :debounce="300" v-model="value" placeholder="Hľadať…" class="h-8 w-[250px]" />
 </template>
 
 <script setup lang="ts">

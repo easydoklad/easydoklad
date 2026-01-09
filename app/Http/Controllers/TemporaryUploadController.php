@@ -47,6 +47,7 @@ class TemporaryUploadController
             'disk' => $disk,
             'path' => $dir.DIRECTORY_SEPARATOR.$fileName,
             'scope' => $scope,
+            'client_name' => $file->getClientOriginalName(),
         ]);
 
         $upload->user()->associate($request->user());
@@ -57,6 +58,7 @@ class TemporaryUploadController
         return response()->json([
             'id' => $upload->uuid,
             'url' => $upload->url(),
+            'client_name' => $upload->client_name,
         ]);
     }
 }

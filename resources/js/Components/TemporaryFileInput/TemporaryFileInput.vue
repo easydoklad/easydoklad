@@ -9,25 +9,50 @@
       :show-icon="showIcon"
     />
 
-    <div
-      v-else
-      :class="cn(
-        'relative w-fit flex items-center justify-center border border-dashed p-2 rounded-md',
-        $attrs.class || ''
-      )"
-    >
-      <img class="h-32" v-if="preview" :src="preview" alt="">
-      <TooltipProvider :delay-duration="0" v-if="! disabled">
-        <Tooltip @click.stop>
-          <TooltipTrigger as-child>
-            <button class="text-destructive absolute -top-4 -right-4 opacity-70 hover:opacity-100 p-2" @click="remove">
-              <XCircleIcon class="size-4" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>Odstrániť</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>
+    <template v-else>
+      <div
+        v-if="image"
+        :class="cn(
+          'relative w-fit flex items-center justify-center border border-dashed p-2 rounded-md',
+          $attrs.class || ''
+        )"
+      >
+        <img class="h-32" v-if="preview" :src="preview" alt="">
+
+        <TooltipProvider :delay-duration="0" v-if="! disabled">
+          <Tooltip @click.stop>
+            <TooltipTrigger as-child>
+              <button class="text-destructive absolute -top-4 -right-4 opacity-70 hover:opacity-100 p-2" @click="remove">
+                <XCircleIcon class="size-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Odstrániť</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div
+        v-else
+        :class="cn(
+          'border-2 border-dashed border-input flex flex-row items-center justify-between gap-4 rounded-md p-3',
+          $attrs.class || '',
+        )"
+      >
+        <p class="break-all text-sm font-medium">{{ uploadedFile?.client_name}}</p>
+
+        <TooltipProvider :delay-duration="0" v-if="! disabled">
+          <Tooltip @click.stop>
+            <TooltipTrigger as-child>
+              <button class="text-destructive opacity-70 hover:opacity-100 p-2" @click="remove">
+                <XCircleIcon class="size-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Odstrániť</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    </template>
+
   </FormControl>
 </template>
 
@@ -45,19 +70,22 @@ const emit = defineEmits(['update:file', 'update:remove'])
 const props = withDefaults(defineProps<{
   error?: string | null | undefined
   scope: string
-  source: string | null
-  remove: boolean
+  source?: string | null
+  remove?: boolean
   file: string | null
   disabled?: boolean
   dropClass?: HTMLAttributes['class']
   showIcon?: boolean
+  image?: boolean
 }>(), {
   showIcon: true,
+  image: true,
 })
 
 interface Upload {
   id: string
   url: string
+  client_name: string
 }
 
 const uploading = ref(false)
@@ -86,7 +114,7 @@ const onFiles = async (files: Array<File>) => {
 }
 
 const upload = async (file: File) => {
-  const shouldRemove = props.remove
+  const shouldRemove = !!props.remove
 
   emit('update:remove', false)
   emit('update:file', null)

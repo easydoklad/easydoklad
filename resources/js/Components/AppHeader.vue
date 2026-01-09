@@ -116,7 +116,7 @@ import UserMenuContent from '@/Components/UserMenuContent.vue'
 import type { BreadcrumbItem } from '@/Types'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useNavigation, NavigationButton, NavigationButtonIcon } from "@stacktrace/ui";
-import { MenuIcon, LayoutGridIcon, ChevronDownIcon, FileTextIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon } from 'lucide-vue-next'
+import { MenuIcon, LayoutGridIcon, ChevronDownIcon, FileTextIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, LandmarkIcon } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { DevPreview } from '@/Components/FeatureFlags'
 
@@ -143,10 +143,16 @@ const navigation = useNavigation(computed(() => {
       icon: LayoutGridIcon,
     },
     {
-      title: hasExpensesFeature ? 'Príjmy' : 'Vystavené faktúry',
+      title: 'Faktúry',
       action: { route: 'invoices' },
       active: { route: 'invoices*' },
-      icon: hasExpensesFeature ? BanknoteArrowUpIcon : FileTextIcon,
+      icon: FileTextIcon,
+    },
+    {
+      title: 'Bankové transakcie',
+      action: { route: 'bank-transactions' },
+      active: { route: 'bank-transactions' },
+      icon: LandmarkIcon,
     },
   ]
 

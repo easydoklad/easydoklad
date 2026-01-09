@@ -6,6 +6,7 @@ use App\Enums\BankTransactionAccountType;
 use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class BankTransactionAccount extends Model
 {
-    use HasUuid;
+    use HasUuid, SoftDeletes;
 
     protected $guarded = false;
 
@@ -29,13 +30,18 @@ class BankTransactionAccount extends Model
     protected static function booted(): void
     {
         static::deleting(function (BankTransactionAccount $account) {
-            // TODO: Odstranit transakcie
+            $account->transactions()->delete();
         });
     }
 
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(BankTransaction::class);
     }
 
     /**

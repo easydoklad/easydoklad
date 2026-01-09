@@ -2,14 +2,18 @@
   <div>
     <DataTableProvider :context="context">
       <!-- Empty Table -->
-      <DataTableEmpty
-        v-if="table.isEmpty"
-        :title="emptyTableMessage || messages.emptyTableTitle"
-        :description="emptyTableDescription || messages.emptyTableDescription"
-        :icon="TableIcon"
-      >
-        <slot name="empty-table" />
-      </DataTableEmpty>
+      <Empty v-if="table.isEmpty">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <component :is="emptyIcon || TableIcon" />
+          </EmptyMedia>
+          <EmptyTitle>{{ emptyTableMessage || messages.emptyTableTitle }}</EmptyTitle>
+          <EmptyDescription>{{ emptyTableDescription || messages.emptyTableDescription }}</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent v-if="$slots['empty-table']">
+          <slot name="empty-table" />
+        </EmptyContent>
+      </Empty>
 
       <!-- Data Table -->
       <template v-else>
@@ -109,7 +113,7 @@
 import { type DataTableValue } from "./";
 import { createContext } from './internal'
 import { createHeadingStyle, createRowStyle } from '.'
-import { computed } from "vue";
+import { type Component, computed } from "vue";
 import { cn } from "@/Utils";
 import { SearchIcon, XIcon, TableIcon } from 'lucide-vue-next'
 import { Button } from '@/Components/Button'
@@ -125,6 +129,7 @@ import DataTableViewSettings from './DataTableViewSettings.vue'
 import DataTableFilter from './DataTableFilter.vue'
 import DataTablePagination from './DataTablePagination.vue'
 import DataTableEmpty from './DataTableEmpty.vue'
+import { Empty, EmptyHeader, EmptyMedia, EmptyDescription, EmptyTitle, EmptyContent } from '@/Components/Empty'
 
 const emit = defineEmits() // eslint-disable-line vue/valid-define-emits
 
@@ -137,6 +142,7 @@ const props = defineProps<{
   borderless?: boolean
   insetLeft?: string | undefined
   insetRight?: string | undefined
+  emptyIcon?: Component
 }>()
 
 const context = createContext(computed(() => props.table))

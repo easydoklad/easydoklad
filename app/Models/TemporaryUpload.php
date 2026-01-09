@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * @property string $disk
@@ -15,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $scope
  * @property \App\Models\User|null $user
  * @property \App\Models\Account $account
+ * @property string $client_name
  */
 class TemporaryUpload extends Model
 {
@@ -47,6 +51,32 @@ class TemporaryUpload extends Model
     public function prunable(): Builder
     {
         return static::query()->where('created_at', '<=', now()->subHours(24));
+    }
+
+    /**
+     * Copy file to given disk and directory.
+     */
+    public function copyTo(string $disk, string $directory): string
+    {
+        $fileName = Str::random(20).'.'.File::extension($this->path);
+
+        Storage::disk($disk)
+            ->writeStream(
+                path: $directory.DIRECTORY_SEPARATOR.$fileName,
+                resource: Storage::disk($this->disk)->readStream($this->path),
+            );
+
+        return $directory.'/'.$fileName;
+    }
+
+    /**
+     * Copy file to the separate workspace for processing.
+     */
+    public function copyToWorkspace(?string $name = null): string
+    {
+        $name = $name ?: Str::lower(Str::random(20));
+
+        return $this->copyTo(disk: 'local', directory: 'workspaces'.DIRECTORY_SEPARATOR.$name);
     }
 
     /**
@@ -92,6 +122,11 @@ class TemporaryUpload extends Model
                 'dimensions:min_width=100,min_height=100,max_width=400,max_height=400',
                 'extensions:jpg,png,jpeg',
                 'mimes:jpg,png,jpeg',
+            ],
+            'BankTransactionsCamt' => [
+                'extensions:xml',
+                'mimes:xml',
+                'max:25600',
             ],
         ];
     }

@@ -1,16 +1,16 @@
 <template>
-  <Head title="Vystavené faktúry"/>
+  <Head title="Faktúry"/>
 
   <AppLayout class="pb-12">
     <div class="flex flex-row items-end justify-between pt-6 px-4">
-      <Heading title="Vystavené faktúry" class="mb-0" />
+      <Heading title="Faktúry" class="mb-0" />
 
       <div class="inline-flex flex-row gap-2">
         <Button v-if="! invoices.isEmpty" :processing="draft.processing" @click="createDraft" size="sm" label="Nová faktúra" :icon="PlusIcon" />
       </div>
     </div>
 
-    <div class="px-4">
+    <div class="px-2">
       <DataTable
         :table="invoices"
         inset-left="pl-1"

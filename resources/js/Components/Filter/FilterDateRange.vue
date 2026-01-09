@@ -25,7 +25,7 @@
         <RangeCalendar locale="sk" v-model="date" initial-focus :number-of-months="2" />
 
         <div v-if="isSelected" class="px-4 pb-2">
-          <Button @click="clear" class="w-full" variant="ghost">Clear</Button>
+          <Button @click="clear" class="w-full" variant="ghost">Vymazať</Button>
         </div>
       </PopoverContent>
     </Popover>
