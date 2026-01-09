@@ -5,13 +5,13 @@ namespace App\Banking\MailParsers;
 
 
 use App\Banking\MailParser;
-use App\Banking\PendingBankTransaction;
+use App\Banking\PendingTransaction;
 use App\Enums\BankTransactionSource;
+use App\Enums\BankTransactionType;
 use App\Support\IbanGenerator;
 use BeyondCode\Mailbox\InboundEmail;
 use Brick\Money\Money;
 use Carbon\Carbon;
-use Domain\AutoPair\Utils;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -21,9 +21,15 @@ class TatraBankaBMailParser implements MailParser
         protected IbanGenerator $ibanGenerator
     ) { }
 
-    public function parse(InboundEmail $email): ?PendingBankTransaction
+    public function parse(InboundEmail $email): ?PendingTransaction
     {
         $rawText = trim($email->text());
+
+        $type = $this->resolveType($rawText);
+
+        if (! $type) {
+            return null;
+        }
 
         $receivedToIban = $this->parseReceivedToIban($rawText);
 
@@ -51,19 +57,35 @@ class TatraBankaBMailParser implements MailParser
 
         $reference = $this->parseReference($rawText);
 
-        return new PendingBankTransaction(
+        $date = $this->parseDate($rawText);
+
+        if (! $date) {
+            return null;
+        }
+
+        return new PendingTransaction(
             source: BankTransactionSource::MailNotification,
-            date: $this->parseDate($rawText),
+            type: $type,
+            date: $date,
             sentFromName: $this->parseReceivedFromAccountName($rawText),
             sentFromIban: $sentFromIban,
             receivedToIban: $receivedToIban,
             amount: $amount,
             variableSymbol: $reference ? $this->parseSymbolFromReference($reference, 'VS') : null,
-            specificSymol: $reference ? $this->parseSymbolFromReference($reference, 'SS') : null,
+            specificSymbol: $reference ? $this->parseSymbolFromReference($reference, 'SS') : null,
             constantSymbol: $reference ? $this->parseSymbolFromReference($reference, 'KS') : null,
             description: $description,
             reference: $reference,
         );
+    }
+
+    protected function resolveType(string $source): ?BankTransactionType
+    {
+        if (Str::contains($source, 'zvyseny')) {
+            return BankTransactionType::Credit;
+        }
+
+        return null;
     }
 
     protected function parseSymbolFromReference(string $reference, string $symbol): ?string
@@ -102,18 +124,17 @@ class TatraBankaBMailParser implements MailParser
 
     protected function parseAmount(string $source): ?Money
     {
-        // TODO: Add currency support
+        preg_match_all('/zvyseny\so\s([\d,\s]+)\s([A-Z]{3})/m', $source, $matches);
 
-        $re = '/^.+zvyseny\so\s([\d,\s]+)\sEUR.*$/m';
+        if (count($matches) === 3 && count($matches[1]) === 1 && count($matches[2]) === 1) {
+            $amount = Str::of($matches[1][0])->replace([' ', '.'], '')->replace(',', '.')->value();
+            $currency = $matches[2][0];
 
-        preg_match_all($re, $source, $matches, PREG_SET_ORDER);
-
-        if (count($matches) > 0 && count($matches[0]) == 2) {
-            $rawMoney = (string) Str::of($matches[0][1])
-                ->replace([' ', '.'], '')
-                ->replace(',', '.');
-
-            return Money::of($rawMoney, 'EUR');
+            try {
+                return Money::of($amount, $currency);
+            } catch (Throwable){
+                //
+            }
         }
 
         return null;
@@ -121,7 +142,7 @@ class TatraBankaBMailParser implements MailParser
 
     protected function parseSentFromIban(string $description): ?string
     {
-        // SK verzia iba funguje.
+        // TODO: SK verzia ibanu iba funguje
         $re = '/(platba|tpp)\s(\d+)\/(\d+)-(\d+)/mi';
 
         preg_match_all($re, strtolower($description), $matches, PREG_SET_ORDER);

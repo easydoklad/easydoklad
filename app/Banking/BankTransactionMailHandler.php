@@ -6,9 +6,11 @@ namespace App\Banking;
 
 use App\Enums\BankTransactionAccountType;
 use App\Models\BankTransactionAccount;
+use App\Services\BankingService;
 use BeyondCode\Mailbox\InboundEmail;
 use Closure;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 class BankTransactionMailHandler
@@ -17,6 +19,10 @@ class BankTransactionMailHandler
      * List of registered parsers.
      */
     protected array $parsers = [];
+
+    public function __construct(
+        protected BankingService $bankingService,
+    ) { }
 
     /**
      * Register a mail transaction parser for given account type.
@@ -54,7 +60,11 @@ class BankTransactionMailHandler
         $parser = $this->resolveParser($account->type);
 
         if ($transaction = $parser->parse($email)) {
-            dd('got transaction', $transaction, $account, $email);
+            DB::transaction(function () use ($account, $transaction) {
+                $bankTransaction = $this->bankingService->recordTransaction($account, $transaction, ignoreDuplicate: false);
+
+                $this->bankingService->pairTransaction($bankTransaction);
+            });
         }
     }
 }

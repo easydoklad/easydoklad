@@ -9,6 +9,7 @@ use App\Facades\Accounts;
 use App\Mail\Mailbox;
 use App\Models\User;
 use App\Services\AccountService;
+use App\Services\BankingService;
 use BeyondCode\Mailbox\Facades\Mailbox as MailboxRouter;
 use BeyondCode\Mailbox\InboundEmail;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -24,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->scoped(AccountService::class);
         $this->app->alias(AccountService::class, 'accounts');
+
+        $this->app->scoped(BankingService::class);
+        $this->app->alias(BankingService::class, 'banking');
 
         $this->app->singleton(Mailbox::class);
 

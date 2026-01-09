@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property PaymentMethod $method
  * @property \Carbon\Carbon $received_at
  * @property \App\Models\Account $account
+ * @property \App\Models\BankTransaction $bankTransaction
  */
 class Payment extends Model
 {
@@ -48,5 +49,10 @@ class Payment extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function bankTransaction(): BelongsTo
+    {
+        return $this->belongsTo(BankTransaction::class);
     }
 }
