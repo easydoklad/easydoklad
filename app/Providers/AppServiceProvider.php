@@ -37,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Relation::enforceMorphMap([
+            'account' => \App\Models\Account::class,
             'invoice' => \App\Models\Invoice::class,
         ]);
     }

@@ -16,7 +16,14 @@
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0" :to="to">
-      <Calendar v-model="date" initial-focus locale="sk" @update:model-value="onSelected" />
+      <Calendar
+        v-model="date"
+        initial-focus
+        locale="sk"
+        @update:model-value="onSelected"
+        :min-value="minValue"
+        :max-value="maxValue"
+      />
     </PopoverContent>
   </Popover>
 </template>
@@ -43,6 +50,8 @@ const props = defineProps<{
   to?: string | HTMLElement
   closeOnSelect?: boolean
   disabled?: boolean
+  min?: string | null | undefined
+  max?: string | null | undefined
 }>()
 
 const df = new DateFormatter('sk-SK', {
@@ -50,6 +59,9 @@ const df = new DateFormatter('sk-SK', {
 })
 
 const date = ref(props.modelValue ? parseDate(props.modelValue) : undefined) as Ref<DateValue | undefined>
+
+const minValue = computed(() => props.min ? parseDate(props.min) : undefined)
+const maxValue = computed(() => props.max ? parseDate(props.max) : undefined)
 
 const open = ref(false)
 

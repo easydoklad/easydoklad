@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Settings\AccountController;
+use App\Http\Controllers\Settings\ApiKeyController;
 use App\Http\Controllers\Settings\BankAccountController;
+use App\Http\Controllers\Settings\BankTransactionAccountController;
+use App\Http\Controllers\Settings\BankTransactionsController;
 use App\Http\Controllers\Settings\ChangeInvoiceLogoController;
 use App\Http\Controllers\Settings\ChangeInvoiceSignatureController;
 use App\Http\Controllers\Settings\InvoiceController;
@@ -33,7 +36,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('settings/invoices/signature', ChangeInvoiceSignatureController::class)->name('invoices.settings.signature');
     Route::patch('settings/invoices/logo', ChangeInvoiceLogoController::class)->name('invoices.settings.logo');
 
-    Route::get('settings/bank-transactions', \App\Http\Controllers\Settings\BankTransactionsController::class)->name('settings.bank-transactions');
-    Route::post('settings/bank-transaction-accounts', [\App\Http\Controllers\Settings\BankTransactionAccountController::class, 'store'])->name('bank-transaction-accounts.store');
-    Route::delete('settings/bank-transaction-accounts/{account:uuid}', [\App\Http\Controllers\Settings\BankTransactionAccountController::class, 'destroy'])->name('bank-transaction-accounts.destroy');
+    Route::get('settings/bank-transactions', BankTransactionsController::class)->name('settings.bank-transactions');
+    Route::post('settings/bank-transaction-accounts', [BankTransactionAccountController::class, 'store'])->name('bank-transaction-accounts.store');
+    Route::delete('settings/bank-transaction-accounts/{account:uuid}', [BankTransactionAccountController::class, 'destroy'])->name('bank-transaction-accounts.destroy');
+
+    Route::get('settings/api-keys', [ApiKeyController::class, 'index'])->name('settings.api-keys');
+    Route::post('settings/api-keys', [ApiKeyController::class, 'store'])->name('api-keys.store');
+    Route::delete('settings/api-keys/{token}', [ApiKeyController::class, 'destroy'])->name('api-keys.destroy');
 });

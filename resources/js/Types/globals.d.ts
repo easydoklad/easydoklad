@@ -22,6 +22,9 @@ declare module '@inertiajs/core' {
         email: string
         helpLink: string | null
       }
+      recentlyCreatedApiKey?: {
+        token: string
+      }
     }
   }
 

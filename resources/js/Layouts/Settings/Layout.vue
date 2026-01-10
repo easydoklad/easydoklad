@@ -23,6 +23,10 @@
               title: 'Bankové transakcie',
               action: { route: 'settings.bank-transactions' },
             },
+            {
+              title: 'API kľúče',
+              action: { route: 'settings.api-keys' },
+            },
           ]"
           orientation="vertical"
           variant="ghost"
