@@ -15,6 +15,8 @@ use BeyondCode\Mailbox\InboundEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
@@ -40,6 +42,13 @@ class AppServiceProvider extends ServiceProvider
             'account' => \App\Models\Account::class,
             'invoice' => \App\Models\Invoice::class,
         ]);
+
+        ResourceCollection::macro('paginationInformation', function ($request, $resource, $defaults) {
+            return Arr::except($defaults, [
+                'links',
+                'meta.links',
+            ]);
+        });
     }
 
     public function boot(): void

@@ -1,8 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API as Controllers;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::prefix('v1')->middleware('auth:api')->group(function () {
+    Route::get('invoices', [Controllers\InvoiceController::class, 'index']);
+    Route::get('invoices/{invoice:uuid}', [Controllers\InvoiceController::class, 'show']);
+    Route::get('invoices/{invoice:uuid}/signature', [Controllers\InvoiceSignatureController::class, 'show']);
+    Route::get('invoices/{invoice:uuid}/logo', [Controllers\InvoiceLogoController::class, 'show']);
+    // TODO: GET invoices/{invoice:uuid}/pay-by-square
+});

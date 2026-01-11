@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 /**
  * @property int $id
@@ -56,6 +58,26 @@ class Upload extends Model
     public function url(): ?string
     {
         return Storage::disk($this->disk)->url($this->file_path);
+    }
+
+    /**
+     * Get file content as base64.
+     *
+     * @throws \Exception When file could not be represented in base64 format
+     */
+    public function asBase64(): string
+    {
+        $mime = $this->mime();
+
+        if (! in_array($mime, ['image/png', 'image/jpg', 'image/jpeg'])) {
+            throw new Exception("This file type cannot be represented as base64");
+        }
+
+        if ($contents = $this->contents()) {
+            return "data:{$mime};base64,".base64_encode($contents);
+        }
+
+        throw new RuntimeException("Unable to retrieve file contents");
     }
 
     /**

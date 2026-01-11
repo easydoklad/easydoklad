@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DocumentType;
+use App\Models\Concerns\HasUuid;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -27,9 +28,12 @@ use ZipArchive;
  * @property string $name
  * @property string $installation_path
  * @property string $package
+ * @property string $description
  */
 class DocumentTemplate extends Model
 {
+    use HasUuid;
+
     protected $guarded = false;
 
     protected function casts(): array

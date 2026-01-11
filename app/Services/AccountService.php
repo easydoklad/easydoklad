@@ -21,8 +21,12 @@ class AccountService
      */
     public function current(): Account
     {
-        /** @var \App\Models\User $user */
+        /** @var \App\Models\User|\App\Models\Account $user */
         $user = $this->auth->user();
+
+        if ($user instanceof Account) {
+            return $user;
+        }
 
         if (! $user) {
             throw new InvalidArgumentException("The user is not authenticated");
