@@ -5,13 +5,16 @@ use App\Enums\PaymentMethod;
 use App\Models\DocumentTemplate;
 use App\Models\Invoice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Testing\Fluent\AssertableJson;
+use function Pest\Laravel\postJson;
 
 uses(RefreshDatabase::class);
 
 it('should authorize to create an invoice', function () {
-
-})->todo();
+    postJson('api/v1/invoices')
+        ->assertUnauthorized();
+});
 
 it('should create draft invoice when no arguments provider', function () {
     actingAsSanctumAccount()
@@ -197,7 +200,7 @@ it('should create draft invoice with initial data', function () {
             )
         );
 
-    $invoice = Invoice::findByUUID($response->decodeResponseJson()->json('data.id'));
+    $invoice = Invoice::findByUUID($response->json('data.id'));
 
     expect($invoice)
         ->not->toBeNull()
@@ -282,5 +285,76 @@ it('should create draft invoice with initial data', function () {
 });
 
 it('should issue invoice during creating invoice', function () {
+    Carbon::setTestNow('2026-01-01 20:00:00');
 
-})->todo();
+    $response = actingAsSanctumAccount()
+        ->postJson('api/v1/invoices', [
+            'issue' => true,
+
+            'issued_at' => '2026-01-04',
+            'supplied_at' => '2025-12-31',
+            'payment_due_to' => '2026-01-14',
+
+            'supplier_business_name' => 'Kominky s.r.o.',
+            'supplier_address_line_one' => 'Kominkova 12',
+            'supplier_address_city' => 'Kominkov',
+            'supplier_address_postal_code' => '08123',
+            'supplier_address_country' => 'sk',
+
+            'customer_business_name' => 'Rurky s.r.o.',
+            'customer_address_line_one' => 'Rurkova 20',
+            'customer_address_city' => 'Rurkov',
+            'customer_address_postal_code' => '08321',
+            'customer_address_country' => 'sk',
+
+            'vat_enabled' => false,
+            'vat_reverse_charge' => true,
+            'payment_method' => 'bank-transfer',
+            'bank_name' => 'Hraškobanka a.s.',
+            'bank_address' => 'Strukova 14, 08123 Hraškovce',
+            'bank_bic' => 'PEASX',
+            'bank_account_number' => '123456',
+            'bank_account_iban' => 'PE1212341234',
+            'variable_symbol' => '123456',
+            'show_pay_by_square' => false,
+
+            'lines' => [
+                [
+                    'title' => 'Kominok',
+                    'description' => 'Mala veľkosť',
+                    'quantity' => 2,
+                    'unit_of_measure' => 'ks',
+                    'unit_price' => 10000,
+                    'total_vat_exclusive' => 20000,
+                ],
+            ]
+        ])
+        ->assertCreated();
+
+    $invoice = Invoice::findByUUID($response->json('data.id'));
+
+    expect($invoice)
+        ->draft->toBeFalse()
+        ->locked->toBeTrue()
+        ->public_invoice_number->not->toBeNull()
+        ->issued_at->not->toBeNull()
+        ->issued_at->toDateString()->toBe('2026-01-04');
+});
+
+it('should require certain fields to be set when issuing invoice during creation', function () {
+    $account = createAccount();
+
+    actingAsSanctumAccount($account)
+        ->postJson('api/v1/invoices', [
+            'issue' => true,
+        ])
+        ->assertJsonValidationErrors([
+            'customer_business_name',
+            'customer_address_line_one',
+            'customer_address_city',
+            'customer_address_country',
+            'lines',
+        ]);
+
+    expect($account->invoices)->toBeEmpty();
+});

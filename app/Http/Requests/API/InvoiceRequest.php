@@ -37,10 +37,12 @@ class InvoiceRequest extends FormRequest
         $vatEnabled = $this->vatEnabled();
 
         return [
+            'issue' => ['sometimes', 'boolean'],
+
             'invoice_number' => ['sometimes', $strict ? 'required' : 'nullable', 'string', 'max:191'],
-            'issued_at' => ['sometimes', 'required', 'date_format:Y-m-d'],
-            'supplied_at' => ['sometimes', 'required', 'date_format:Y-m-d'],
-            'payment_due_to' => ['sometimes', 'required', 'date_format:Y-m-d'],
+            'issued_at' => ['sometimes', $strict ? 'required' : 'nullable', 'date_format:Y-m-d'],
+            'supplied_at' => ['sometimes', $strict ? 'required' : 'nullable', 'date_format:Y-m-d'],
+            'payment_due_to' => ['sometimes', $strict ? 'required' : 'nullable', 'date_format:Y-m-d'],
 
             'supplier_business_name' => ['sometimes', $strict ? 'required' : 'nullable', 'string', 'max:191'],
             'supplier_business_id' => ['sometimes', 'nullable', 'string', 'max:191'],
@@ -137,6 +139,10 @@ class InvoiceRequest extends FormRequest
     {
         if ($invoice = $this->invoice()) {
             return !$invoice->draft;
+        }
+
+        if ($this->has('issue')) {
+            return $this->boolean('issue');
         }
 
         return false;

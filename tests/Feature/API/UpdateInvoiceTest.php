@@ -5,6 +5,7 @@ use App\Enums\PaymentMethod;
 use App\Models\DocumentTemplate;
 use App\Models\Invoice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Testing\Fluent\AssertableJson;
 use function Pest\Laravel\patchJson;
 
@@ -23,7 +24,7 @@ it('should authorize to update an invoice', function () {
     ])->assertUnauthorized();
 });
 
-it('should not allow to update invoice of different account', function () {
+it('should not allow to update invoice of other account', function () {
     $invoice = Invoice::factory()
         ->for(createAccount())
         ->withCustomer()
@@ -61,8 +62,6 @@ it('should update an invoice', function () {
         ->withDefaultTemplate()
         ->withLines()
         ->create(['draft' => true, 'locked' => false]);
-
-    expect($invoice->lines)->toHaveCount(1);
 
     $template = DocumentTemplate::factory()->for($account)->create([
         'name' => 'Custom nazov',
@@ -314,6 +313,71 @@ it('should update an invoice', function () {
     ;
 });
 
-it('should keep attributes which are not being patched', function () {
+it('should allow partially update invoice', function () {
+    $invoice = Invoice::factory()
+        ->for($account = createAccount())
+        ->withSupplier()
+        ->withCustomer()
+        ->withDefaultTemplate()
+        ->withLines()
+        ->create([
+            'draft' => true,
+            'locked' => false,
+            'issued_at' => Date::createFromFormat('Y-m-d', '2026-01-13'),
+            'payment_due_to' => Date::createFromFormat('Y-m-d', '2026-01-20'),
+        ]);
 
-})->todo();
+    expect($invoice)
+        ->issued_at->toDateString()->toBe('2026-01-13')
+        ->payment_due_to->toDateString()->toBe('2026-01-20');
+
+    actingAsSanctumAccount($account)
+        ->patchJson("api/v1/invoices/{$invoice->uuid}", [
+            'payment_due_to' => '2026-01-30',
+        ])
+        ->assertSuccessful();
+
+    expect($invoice->refresh())
+        ->issued_at->toDateString()->toBe('2026-01-13')
+        ->payment_due_to->toDateString()->toBe('2026-01-30');
+});
+
+it('should not allow to unset required data when invoice is already issued', function () {
+    $invoice = Invoice::factory()
+        ->for($account = createAccount())
+        ->withSupplier()
+        ->withCustomer()
+        ->withDefaultTemplate()
+        ->withLines()
+        ->create(['draft' => false, 'locked' => false]);
+
+    actingAsSanctumAccount($account)
+        ->patchJson("api/v1/invoices/{$invoice->uuid}", [
+            'issued_at' => null,
+            'supplied_at' => null,
+            'payment_due_to' => null,
+            'supplier_business_name' => null,
+            'supplier_address_line_one' => null,
+            'supplier_address_city' => null,
+            'supplier_address_country' => null,
+            'customer_business_name' => null,
+            'customer_address_line_one' => null,
+            'customer_address_city' => null,
+            'customer_address_country' => null,
+            'lines' => [],
+        ])
+        ->assertJsonValidationErrors([
+            'issued_at',
+            'supplied_at',
+            'payment_due_to',
+            'supplier_business_name',
+            'supplier_address_line_one',
+            'supplier_address_city',
+            'supplier_address_country',
+            'customer_business_name',
+            'customer_address_line_one',
+            'customer_address_city',
+            'customer_address_country',
+            'lines',
+        ]);
+});

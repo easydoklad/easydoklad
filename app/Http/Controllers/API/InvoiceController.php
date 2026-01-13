@@ -4,19 +4,13 @@
 namespace App\Http\Controllers\API;
 
 
-use App\Enums\Country;
-use App\Enums\PaymentMethod;
 use App\Facades\Accounts;
 use App\Http\Requests\API\InvoiceRequest;
-use App\Models\Address;
 use App\Models\Company;
-use App\Models\DocumentTemplate;
 use App\Models\Invoice;
-use App\Support\Patch;
-use Brick\Money\Money;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Date;
+use App\Models\InvoiceLine;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class InvoiceController extends Controller
 {
@@ -103,6 +97,49 @@ class InvoiceController extends Controller
             // Calculate totals
             $invoice->calculateTotals();
 
+            // When issuing invoice, any missing data will roll back the transaction and no invoice will be created.
+            if ($request->boolean('issue')) {
+                Validator::make(
+                    data: [
+                        'supplied_at' => $invoice->supplied_at?->format('Y-m-d'),
+                        'payment_due_to' => $invoice->payment_due_to?->format('Y-m-d'),
+                        'supplier_business_name' => $invoice->supplier->business_name,
+                        'supplier_address_line_one' => $invoice->supplier->address?->line_one,
+                        'supplier_address_city' => $invoice->supplier->address?->city,
+                        'supplier_address_country' => $invoice->supplier->address?->country,
+                        'customer_business_name' => $invoice->customer->business_name,
+                        'customer_address_line_one' => $invoice->customer->address?->line_one,
+                        'customer_address_city' => $invoice->customer->address?->city,
+                        'customer_address_country' => $invoice->customer->address?->country,
+                        'lines' => $invoice->lines->map(fn (InvoiceLine $line) => [
+                            'title' => $line->title,
+                            'unit_price' => $line->unit_price_vat_exclusive?->getMinorAmount()->toInt(),
+                            'vat' => $line->vat_rate,
+                            'total_vat_inclusive' => $line->total_price_vat_inclusive?->getMinorAmount()->toInt(),
+                        ])->all(),
+                    ],
+                    rules: [
+                        'supplied_at' => ['required'],
+                        'payment_due_to' => ['required'],
+                        'supplier_business_name' => ['required'],
+                        'supplier_address_line_one' => ['required'],
+                        'supplier_address_city' => ['required'],
+                        'supplier_address_country' => ['required'],
+                        'customer_business_name' => ['required'],
+                        'customer_address_line_one' => ['required'],
+                        'customer_address_city' => ['required'],
+                        'customer_address_country' => ['required'],
+                        'lines' => ['array', 'max:100', 'min:1'],
+                        'lines.*.title' => ['required', 'string', 'max:500'],
+                        'lines.*.unit_price' => [$invoice->vat_enabled ? 'required' : 'nullable'],
+                        'lines.*.vat' => [$invoice->vat_enabled ? 'required' : 'nullable'],
+                        'lines.*.total_vat_inclusive' => [$invoice->vat_enabled ? 'required' : 'nullable', 'integer'],
+                    ],
+                )->validate();
+
+                $invoice->issue();
+            }
+
             return $invoice;
         });
 
@@ -148,5 +185,15 @@ class InvoiceController extends Controller
         });
 
         return $invoice->toResource();
+    }
+
+    public function destroy(Invoice $invoice)
+    {
+        abort_unless(Accounts::current()->is($invoice->account), 403);
+        abort_if($invoice->locked, 400, "The invoice is locked.");
+
+        DB::transaction(fn () => $invoice->delete());
+
+        return response()->noContent();
     }
 }

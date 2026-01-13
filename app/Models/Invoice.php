@@ -234,6 +234,7 @@ class Invoice extends Model
         $this->draft = false;
         $this->locked = true;
         $this->invoice_number = $sequence->next_number;
+        $this->issued_at = $this->issued_at ?: now();
         $this->numberSequence()->associate($sequence);
 
         $this->save();
