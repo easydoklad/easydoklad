@@ -9,6 +9,7 @@ use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
 use App\Facades\Accounts;
 use App\Http\Requests\UpdateInvoiceRequest;
+use App\Models\Address;
 use App\Models\Company;
 use App\Models\DocumentTemplate;
 use App\Models\Invoice;
@@ -174,28 +175,19 @@ class InvoiceController
         $account = Accounts::current();
 
         $invoice = DB::transaction(function () use ($account) {
-            $invoice = new Invoice([
-                'draft' => true,
-                'sent' => false,
-                'paid' => false,
-                'locked' => false,
-                'payment_method' => $account->invoice_payment_method,
-                'currency' => $account->getCurrency()->getCurrencyCode(),
-                'vat_enabled' => $account->vat_enabled,
-                'template_id' => $account->invoiceTemplate->id,
-                'footer_note' => $account->invoice_footer_note,
-                'vat_reverse_charge' => false,
-                'show_pay_by_square' => true,
-                'issued_at' => now(),
-                'supplied_at' => now(),
-                'payment_due_to' => now()->addDays($account->invoice_due_days - 1),
-            ]);
+            $invoice = Invoice::makeDraftForAccount($account);
 
-            $supplier = $account->company->replicate();
+            $supplier = $account->company->withoutRelations()->replicate(['address_id']);
+            $supplierAddress = $account->company->address?->replicate() ?: new Address;
+            $supplierAddress->save();
+            $supplier->address()->associate($supplierAddress);
             $supplier->save();
             $invoice->supplier()->associate($supplier);
 
             $customer = new Company;
+            $customerAddress = new Address;
+            $customerAddress->save();
+            $customer->address()->associate($customerAddress);
             $customer->save();
             $invoice->customer()->associate($customer);
 

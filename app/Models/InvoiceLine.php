@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\AsMoney;
 use App\Models\Concerns\HasUuid;
 use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -22,7 +23,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class InvoiceLine extends Model
 {
-    use HasUuid;
+    /** @use HasFactory<\Database\Factories\InvoiceLineFactory> */
+    use HasFactory, HasUuid;
 
     protected $guarded = false;
 

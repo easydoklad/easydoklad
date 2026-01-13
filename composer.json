@@ -1,11 +1,12 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "stacktrace/ui-starter-kit",
+    "name": "easydoklad/easydoklad",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Self-hosted invoice and bill management service.",
     "keywords": [
-        "laravel",
-        "framework"
+        "doklady",
+        "faktury",
+        "easydoklad"
     ],
     "license": "MIT",
     "require": {
@@ -33,7 +34,8 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^11.5.3"
+        "pestphp/pest": "^4.3",
+        "pestphp/pest-plugin-laravel": "^4.0"
     },
     "autoload": {
         "psr-4": {

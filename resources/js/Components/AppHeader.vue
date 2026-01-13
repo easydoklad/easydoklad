@@ -72,7 +72,7 @@
                 <TooltipContent class="w-56">
                   Aplikácia je vo vývoji a obsahuje chyby. Feedback alebo prípadné problémy môžete reportovať mailom na
                   <a class="underline" href="mailto:ps@stacktrace.sk">ps@stacktrace.sk</a>.
-                  PR na <a class="underline" href="https://github.com/ptrstovka/easyDoklad">Githube</a> sú vítané. 😄️
+                  PR na <a class="underline" href="https://github.com/easydoklad/easydoklad">Githube</a> sú vítané. 😄️
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -116,7 +116,7 @@ import UserMenuContent from '@/Components/UserMenuContent.vue'
 import type { BreadcrumbItem } from '@/Types'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useNavigation, NavigationButton, NavigationButtonIcon } from "@stacktrace/ui";
-import { MenuIcon, LayoutGridIcon, ChevronDownIcon, FileTextIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, LandmarkIcon } from 'lucide-vue-next'
+import { MenuIcon, LayoutGridIcon, ChevronDownIcon, FileTextIcon, BanknoteArrowDownIcon, LandmarkIcon } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { DevPreview } from '@/Components/FeatureFlags'
 

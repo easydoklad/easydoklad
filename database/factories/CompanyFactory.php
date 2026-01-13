@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -25,5 +26,10 @@ class CompanyFactory extends Factory
             'bank_bic' => Str::upper(Str::random(6)),
             'bank_account_iban' => fake()->iban,
         ];
+    }
+
+    public function withAddress(): static
+    {
+        return $this->for(Address::factory());
     }
 }
