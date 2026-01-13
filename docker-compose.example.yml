@@ -1,0 +1,12 @@
+services:
+    easydoklad:
+        image: ghcr.io/easydoklad/easydoklad:latest
+        environment:
+            APP_URL: http://localhost:8080
+            APP_KEY: "base64:UAEn4+FdnHHvAv5RAytC12b4ZmsjfrPQ+pKADWkgxOA="
+        ports:
+            - "8080:8080"
+        volumes:
+            - easydoklad-data:/data
+volumes:
+    easydoklad-data:
