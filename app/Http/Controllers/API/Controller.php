@@ -6,6 +6,7 @@ use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Str;
 
 abstract class Controller
 {
@@ -22,9 +23,9 @@ abstract class Controller
 
     protected function paginate(Builder|Relation $builder): CursorPaginator|LengthAwarePaginator
     {
-        $type = request()->input('pagination');
+        $type = request()->header('x-pagination');
 
-        if ($type === 'cursor') {
+        if ($type && Str::lower($type) === 'cursor') {
             return $builder->cursorPaginate($this->perPage());
         } else {
             return $builder->paginate($this->perPage());

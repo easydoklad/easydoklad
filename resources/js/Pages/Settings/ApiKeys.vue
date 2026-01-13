@@ -27,6 +27,8 @@
               </div>
             </div>
           </div>
+
+          <Button @click="createApiKeyDialog.activate" size="sm" variant="outline" :icon="PlusIcon" label="Vytvoriť API kľúč" />
         </template>
       </section>
     </SettingsLayout>

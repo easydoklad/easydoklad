@@ -42,6 +42,7 @@
               </div>
             </div>
           </div>
+
           <Button @click="bankTransactionAccountFormDialog.activate" size="sm" variant="outline" :icon="PlusIcon" label="Pripojiť bankový účet" />
         </template>
       </section>
