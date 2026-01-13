@@ -1,10 +1,12 @@
 <?php
 
+use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
 use App\Models\Account;
 use App\Models\Address;
 use App\Models\Company;
 use App\Models\DocumentTemplate;
+use App\Models\Invoice;
 use Laravel\Sanctum\Sanctum;
 
 function createAccount(): Account
@@ -46,6 +48,11 @@ function createAccount(): Account
             'invoice_footer_note' => 'Spoločnosť je zapísaná v obchodnom registri Okresného súdu Prešov, oddiel: Sro, vložka č. 42064/P',
             'invoice_template_id' => $template->id,
         ]);
+}
+
+function getDefaultTemplate(DocumentType $type): DocumentTemplate
+{
+    return DocumentTemplate::query()->whereNull('account_id')->where('document_type', $type)->firstOrFail();
 }
 
 /**

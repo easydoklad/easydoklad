@@ -33,7 +33,8 @@ use ZipArchive;
  */
 class DocumentTemplate extends Model
 {
-    use HasUuid, HasFactory;
+    /** @use HasFactory<\Database\Factories\DocumentTemplateFactory> */
+    use HasFactory, HasUuid;
 
     protected $guarded = false;
 

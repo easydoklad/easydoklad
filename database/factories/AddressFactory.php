@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,7 +16,7 @@ class AddressFactory extends Factory
             'line_one' => fake()->streetAddress,
             'postal_code' => fake()->postcode,
             'city' => fake()->city,
-            'country' => fake()->countryCode,
+            'country' => $this->faker->randomElement(Country::cases()),
         ];
     }
 }

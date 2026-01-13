@@ -6,37 +6,71 @@ use App\Models\DocumentTemplate;
 use App\Models\Invoice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
+use function Pest\Laravel\patchJson;
 
 uses(RefreshDatabase::class);
 
-it('should authorize to create an invoice', function () {
+it('should authorize to update an invoice', function () {
+    $invoice = Invoice::factory()
+        ->for(createAccount())
+        ->withCustomer()
+        ->withSupplier()
+        ->withDefaultTemplate()
+        ->create();
 
-})->todo();
-
-it('should create draft invoice when no arguments provider', function () {
-    actingAsSanctumAccount()
-        ->postJson('api/v1/invoices')
-        ->assertCreated()
-        ->assertJson(fn (AssertableJson $json) =>
-            $json->has('data', fn (AssertableJson $json) =>
-                $json->has('id')
-                    ->where('is_draft', true)
-                    ->where('lines', [])
-                    ->etc()
-            )
-        );
+    patchJson("api/v1/invoices/{$invoice->uuid}", [
+        'invoice_number' => 'FA001',
+    ])->assertUnauthorized();
 });
 
-it('should create draft invoice with initial data', function () {
-    $account = createAccount();
+it('should not allow to update invoice of different account', function () {
+    $invoice = Invoice::factory()
+        ->for(createAccount())
+        ->withCustomer()
+        ->withSupplier()
+        ->withDefaultTemplate()
+        ->create();
+
+    actingAsSanctumAccount(createAccount())
+        ->patchJson("api/v1/invoices/{$invoice->uuid}", [
+            'invoice_number' => 'FA001',
+        ])
+        ->assertForbidden();
+});
+
+it('should not allow to update locked invoice', function () {
+    $invoice = Invoice::factory()
+        ->for($account = createAccount())
+        ->withCustomer()
+        ->withSupplier()
+        ->withDefaultTemplate()
+        ->create(['draft' => false, 'locked' => true]);
+
+    actingAsSanctumAccount($account)
+        ->patchJson("api/v1/invoices/{$invoice->uuid}", [
+            'invoice_number' => 'FA001',
+        ])
+        ->assertBadRequest();
+});
+
+it('should update an invoice', function () {
+    $invoice = Invoice::factory()
+        ->for($account = createAccount())
+        ->withSupplier()
+        ->withCustomer()
+        ->withDefaultTemplate()
+        ->withLines()
+        ->create(['draft' => true, 'locked' => false]);
+
+    expect($invoice->lines)->toHaveCount(1);
 
     $template = DocumentTemplate::factory()->for($account)->create([
         'name' => 'Custom nazov',
         'description' => 'Custom popis',
     ]);
 
-    $response = actingAsSanctumAccount($account)
-        ->postJson('api/v1/invoices', [
+    actingAsSanctumAccount($account)
+        ->patchJson("api/v1/invoices/{$invoice->uuid}", [
             'invoice_number' => 'FA001',
             'issued_at' => '2026-01-04',
             'supplied_at' => '2025-12-31',
@@ -115,7 +149,7 @@ it('should create draft invoice with initial data', function () {
                 ]
             ]
         ])
-        ->assertCreated()
+        ->assertSuccessful()
         ->assertJson(fn (AssertableJson $json) =>
             $json->has('data', fn (AssertableJson $json) =>
                 $json->has('id')
@@ -197,10 +231,9 @@ it('should create draft invoice with initial data', function () {
             )
         );
 
-    $invoice = Invoice::findByUUID($response->decodeResponseJson()->json('data.id'));
+    $invoice->refresh();
 
     expect($invoice)
-        ->not->toBeNull()
         ->issued_at->toDateString()->toBe('2026-01-04')
         ->supplied_at->toDateString()->toBe('2025-12-31')
         ->payment_due_to->toDateString()->toBe('2026-01-14')
@@ -281,6 +314,6 @@ it('should create draft invoice with initial data', function () {
     ;
 });
 
-it('should issue invoice during creating invoice', function () {
+it('should keep attributes which are not being patched', function () {
 
 })->todo();

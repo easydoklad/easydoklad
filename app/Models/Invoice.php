@@ -22,6 +22,7 @@ use Bysqr\Payment as PendingPayment;
 use Bysqr\PaymentOption;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -71,7 +72,8 @@ use RuntimeException;
  */
 class Invoice extends Model
 {
-    use HasUuid;
+    /** @use HasFactory<\Database\Factories\InvoiceFactory> */
+    use HasFactory, HasUuid;
 
     protected $guarded = false;
 
@@ -547,5 +549,31 @@ class Invoice extends Model
         $this->calculateTotals();
 
         return $payment;
+    }
+
+    /**
+     * Makes a new draft invoice for given account.
+     */
+    public static function makeDraftForAccount(Account $account): Invoice
+    {
+        $invoice = new Invoice([
+            'draft' => true,
+            'sent' => false,
+            'paid' => false,
+            'locked' => false,
+            'payment_method' => $account->invoice_payment_method,
+            'currency' => $account->getCurrency()->getCurrencyCode(),
+            'vat_enabled' => $account->vat_enabled,
+            'footer_note' => $account->invoice_footer_note,
+            'vat_reverse_charge' => false,
+            'show_pay_by_square' => true,
+            'issued_at' => now(),
+            'supplied_at' => now(),
+            'payment_due_to' => now()->addDays($account->invoice_due_days - 1),
+        ]);
+
+        $invoice->template()->associate($account->invoiceTemplate);
+
+        return $invoice;
     }
 }
