@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Invoice;
-
 
 use App\Models\Invoice;
 use App\Templating\InvoiceSerializer;
@@ -16,7 +14,7 @@ class DownloadInvoiceController
     {
         Gate::authorize('view', $invoice);
 
-        abort_if($invoice->draft, 400, "Draft invoices cannot be downloaded");
+        abort_if($invoice->draft, 400, 'Draft invoices cannot be downloaded');
 
         $request->validate([
             'locale' => ['nullable', 'string', 'min:2', 'max:2'],
@@ -37,4 +35,5 @@ class DownloadInvoiceController
         return response()->streamDownload(function () use ($template, $input) {
             echo $template->render($input);
         }, $invoice->createFileName($locale, extension: 'pdf'));
-    }}
+    }
+}

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Requests\API;
-
 
 use App\Enums\Country;
 use App\Enums\DocumentType;
@@ -100,7 +98,7 @@ class InvoiceRequest extends FormRequest
                 $account = Accounts::current();
 
                 if (DocumentTemplate::ofType(DocumentType::Invoice)->availableForAccount($account)->where('uuid', $value)->doesntExist()) {
-                    $fail("Táto šablóna nie je dostupná.");
+                    $fail('Táto šablóna nie je dostupná.');
                 }
             }],
 
@@ -138,7 +136,7 @@ class InvoiceRequest extends FormRequest
     public function strict(): bool
     {
         if ($invoice = $this->invoice()) {
-            return !$invoice->draft;
+            return ! $invoice->draft;
         }
 
         if ($this->has('issue')) {

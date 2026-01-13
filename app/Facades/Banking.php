@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Facades;
-
 
 use App\Banking\PendingTransaction;
 use App\Models\BankTransaction;

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Banking;
-
 
 use App\Enums\BankTransactionSource;
 use App\Enums\BankTransactionType;
@@ -16,7 +14,7 @@ class Camt053Parser
 {
     public function __construct(
         protected string $content
-    ) { }
+    ) {}
 
     protected function processEntry(string $receivedToIban, SimpleXMLElement $entry): ?PendingTransaction
     {
@@ -35,7 +33,7 @@ class Camt053Parser
         $sentFromIban = null;
 
         if ($sentFromIbanEl = $entry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Id) {
-            $sentFromIban = (string) $sentFromIbanEl->IBAN;;
+            $sentFromIban = (string) $sentFromIbanEl->IBAN;
         }
 
         if (! $sentFromIban) {

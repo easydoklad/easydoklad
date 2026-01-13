@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Analytics;
-
 
 final readonly class Link
 {
@@ -10,7 +8,7 @@ final readonly class Link
         public string $label,
         public string $url,
         public bool $isExternal = false,
-    ) { }
+    ) {}
 
     /**
      * Create link to route.

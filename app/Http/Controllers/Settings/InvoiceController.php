@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Settings;
-
 
 use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
@@ -67,7 +65,7 @@ class InvoiceController
             'footer_note' => ['nullable', 'string', 'max:500'],
             'template' => ['required', 'integer', 'min:1', function (string $attribute, int $value, Closure $fail) use ($account) {
                 if (DocumentTemplate::ofType(DocumentType::Invoice)->availableForAccount($account)->where('id', $value)->doesntExist()) {
-                    $fail("Táto šablóna nie je dostupná.");
+                    $fail('Táto šablóna nie je dostupná.');
                 }
             }],
             'payment_method' => ['required', 'string', Rule::enum(PaymentMethod::class)],

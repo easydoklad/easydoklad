@@ -28,7 +28,7 @@ class UpdateInvoiceRequest extends FormRequest
             return false;
         }
 
-        abort_if($invoice->locked, 400, "Locked invoice cannot be modified");
+        abort_if($invoice->locked, 400, 'Locked invoice cannot be modified');
 
         return true;
     }
@@ -101,7 +101,7 @@ class UpdateInvoiceRequest extends FormRequest
                 $account = $this->invoice()->account;
 
                 if (DocumentTemplate::ofType(DocumentType::Invoice)->availableForAccount($account)->where('id', $value)->doesntExist()) {
-                    $fail("Táto šablóna nie je dostupná.");
+                    $fail('Táto šablóna nie je dostupná.');
                 }
             }],
             'footer_note' => ['nullable', 'string', 'max:1000'],
@@ -256,7 +256,7 @@ class UpdateInvoiceRequest extends FormRequest
         if ($this->boolean('remove_logo') && ($logo = $invoice->logo)) {
             $invoice->logo()->dissociate()->save();
             $logo->delete();
-        } else if ($logoFile = $this->input('logo')) {
+        } elseif ($logoFile = $this->input('logo')) {
             $temporaryUpload = TemporaryUpload::findOrFailByUUID($logoFile);
             $upload = Upload::storePublicly($temporaryUpload);
             $invoice->logo()->associate($upload)->save();
@@ -266,7 +266,7 @@ class UpdateInvoiceRequest extends FormRequest
         if ($this->boolean('remove_signature') && ($signature = $invoice->signature)) {
             $invoice->signature()->dissociate()->save();
             $signature->delete();
-        } else if ($signatureFile = $this->input('signature')) {
+        } elseif ($signatureFile = $this->input('signature')) {
             $temporaryUpload = TemporaryUpload::findOrFailByUUID($signatureFile);
             $upload = Upload::storePublicly($temporaryUpload);
             $invoice->signature()->associate($upload)->save();

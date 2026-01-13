@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Invoice;
-
 
 use App\Enums\PaymentMethod;
 use App\Models\Invoice;
@@ -20,7 +18,7 @@ class PaymentController
     {
         Gate::allows('update', $invoice);
 
-        abort_if($invoice->draft, 400, "Draft invoices cannot be modified");
+        abort_if($invoice->draft, 400, 'Draft invoices cannot be modified');
 
         $request->validate([
             'amount' => ['required', 'integer', 'min:1'],

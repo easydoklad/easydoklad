@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Settings;
-
 
 use App\Enums\BankTransactionAccountType;
 use App\Facades\Accounts;
@@ -41,6 +39,7 @@ class BankTransactionAccountController
                 'helpLink' => $bankAccountType->getConfigurationHelpLink(),
             ]);
         }
+
         return back();
     }
 

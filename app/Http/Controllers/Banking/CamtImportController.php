@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Banking;
-
 
 use App\Facades\Accounts;
 use App\Jobs\ImportCamtTransactions;

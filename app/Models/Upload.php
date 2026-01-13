@@ -70,14 +70,14 @@ class Upload extends Model
         $mime = $this->mime();
 
         if (! in_array($mime, ['image/png', 'image/jpg', 'image/jpeg'])) {
-            throw new Exception("This file type cannot be represented as base64");
+            throw new Exception('This file type cannot be represented as base64');
         }
 
         if ($contents = $this->contents()) {
             return "data:{$mime};base64,".base64_encode($contents);
         }
 
-        throw new RuntimeException("Unable to retrieve file contents");
+        throw new RuntimeException('Unable to retrieve file contents');
     }
 
     /**

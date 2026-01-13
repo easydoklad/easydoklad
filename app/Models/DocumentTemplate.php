@@ -25,7 +25,7 @@ use ZipArchive;
  * @property \App\Enums\DocumentType $document_type
  * @property \App\Models\Account|null $account
  * @property array $options
- * @property boolean $is_default
+ * @property bool $is_default
  * @property string $name
  * @property string $installation_path
  * @property string $package
@@ -94,7 +94,7 @@ class DocumentTemplate extends Model
         $script = Storage::path($this->installation_path).'/'.$this->options['entryPoint'];
 
         if (! File::exists($script)) {
-            throw new RuntimeException("Invalid template: the rendering script does not exist");
+            throw new RuntimeException('Invalid template: the rendering script does not exist');
         }
 
         $data = base64_encode(json_encode($input));
@@ -107,7 +107,7 @@ class DocumentTemplate extends Model
      */
     public static function installFromArchive(string $path, ?Account $account = null, bool $default = false): static
     {
-        $tempDir = "temp/unpack-".Str::random("10");
+        $tempDir = 'temp/unpack-'.Str::random('10');
 
         $archive = new ZipArchive;
 
@@ -115,8 +115,8 @@ class DocumentTemplate extends Model
             throw new InvalidArgumentException("Unable to open archive [$path]");
         }
 
-        if (! Storage::exists("temp")) {
-            Storage::makeDirectory("temp");
+        if (! Storage::exists('temp')) {
+            Storage::makeDirectory('temp');
         }
 
         Storage::makeDirectory($tempDir);
@@ -146,7 +146,7 @@ class DocumentTemplate extends Model
         $src = Storage::build(['driver' => 'local', 'root' => $directory]);
 
         if (! $src->exists('manifest.json')) {
-            throw new InvalidArgumentException("The folder does not contain a manifest file");
+            throw new InvalidArgumentException('The folder does not contain a manifest file');
         }
 
         $manifest = json_decode($src->get('manifest.json'), true);
@@ -158,7 +158,7 @@ class DocumentTemplate extends Model
             'package' => ['required', 'string', 'max:191'],
             'entryPoint' => ['required', 'string', 'regex:/\A[a-zA-Z0-9_-]+\.js\z/u', 'max:191', function (string $attribute, mixed $value, Closure $fail) use ($src) {
                 if (! $src->exists($value)) {
-                    $fail("The entry point file does not exist");
+                    $fail('The entry point file does not exist');
                 }
             }],
             'locales' => ['required', 'array', 'min:1'],
@@ -179,7 +179,7 @@ class DocumentTemplate extends Model
         $dest = config('app.template_installation_path');
 
         if (! $dest) {
-            throw new RuntimeException("The app.template_installation_path is not configured");
+            throw new RuntimeException('The app.template_installation_path is not configured');
         }
 
         if (! Storage::exists($dest)) {
@@ -216,7 +216,7 @@ class DocumentTemplate extends Model
         $installationPath = $dest.'/'.hash('sha256', $package.($account ? ':'.$account->id : ''));
 
         if (Storage::exists($installationPath)) {
-            throw new InvalidArgumentException("The template is already installed");
+            throw new InvalidArgumentException('The template is already installed');
         }
 
         Storage::makeDirectory($installationPath);

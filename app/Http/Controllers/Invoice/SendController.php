@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Invoice;
-
 
 use App\Models\Invoice;
 use Illuminate\Http\Request;
@@ -14,7 +12,7 @@ class SendController
     {
         Gate::authorize('view', $invoice);
 
-        abort_if($invoice->draft, 400, "Draft invoices cannot be sent");
+        abort_if($invoice->draft, 400, 'Draft invoices cannot be sent');
 
         $request->validate([
             'email' => ['required', 'string', 'max:191', 'email'],

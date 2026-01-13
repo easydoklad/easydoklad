@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Banking;
-
 
 use App\Facades\Accounts;
 use App\Models\BankTransaction;
@@ -11,9 +9,9 @@ use Inertia\Inertia;
 use StackTrace\Ui\DateRange;
 use StackTrace\Ui\NumberValue;
 use StackTrace\Ui\Table;
+use StackTrace\Ui\Table\Actions;
 use StackTrace\Ui\Table\Columns;
 use StackTrace\Ui\Table\Filters;
-use StackTrace\Ui\Table\Actions;
 
 class BankTransactionController
 {

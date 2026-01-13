@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Invoice;
-
 
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Gate;
@@ -13,7 +11,7 @@ class SentFlagController
     {
         Gate::authorize('update', $invoice);
 
-        abort_if($invoice->draft, 400, "Draft invoices cannot be modified");
+        abort_if($invoice->draft, 400, 'Draft invoices cannot be modified');
 
         $invoice->sent = true;
         $invoice->save();
@@ -25,7 +23,7 @@ class SentFlagController
     {
         Gate::authorize('update', $invoice);
 
-        abort_if($invoice->draft, 400, "Draft invoices cannot be modified");
+        abort_if($invoice->draft, 400, 'Draft invoices cannot be modified');
 
         $invoice->sent = false;
         $invoice->save();

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Settings;
-
 
 use App\Facades\Accounts;
 use App\Models\BankTransactionAccount;

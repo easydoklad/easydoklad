@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Tables\Actions;
-
 
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
@@ -14,11 +12,17 @@ use StackTrace\Ui\Table\Actions\Action;
 class DeletePaymentAction extends Action
 {
     protected ?string $title = 'Odstrániť';
+
     protected ?string $label = 'Odstrániť';
+
     protected ?string $description = 'Naozaj chcete odstrániť túto platbu/platby?';
+
     protected ?string $cancelLabel = 'Ponechať';
+
     protected ?string $confirmLabel = 'Odstrániť';
+
     protected bool $destructive = true;
+
     protected bool $bulk = true;
 
     public function authorize(): bool

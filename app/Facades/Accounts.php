@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Facades;
-
 
 use App\Models\Account;
 use Illuminate\Support\Facades\Facade;

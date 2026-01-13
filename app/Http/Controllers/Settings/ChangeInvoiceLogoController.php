@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Settings;
-
 
 use App\Facades\Accounts;
 use App\Models\TemporaryUpload;
@@ -30,7 +28,7 @@ class ChangeInvoiceLogoController
         if ($remove && ($logo = $account->invoiceLogo)) {
             $account->invoiceLogo()->dissociate()->save();
             $logo->delete();
-        } else if ($file) {
+        } elseif ($file) {
             $temporaryUpload = TemporaryUpload::findOrFailByUUID($file);
             $upload = Upload::storePublicly($temporaryUpload);
             $account->invoiceLogo()->associate($upload)->save();

@@ -14,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * @property int $id
  * @property \App\Models\Company $company
- * @property boolean $vat_enabled
+ * @property bool $vat_enabled
  * @property string $invoice_numbering_format
  * @property string $invoice_variable_symbol_format
  * @property float $default_vat_rate
@@ -34,7 +34,7 @@ use Laravel\Sanctum\HasApiTokens;
 class Account extends Model
 {
     /** @use HasFactory<\Database\Factories\AccountFactory> */
-    use HasFactory, HasApiTokens;
+    use HasApiTokens, HasFactory;
 
     protected $guarded = false;
 

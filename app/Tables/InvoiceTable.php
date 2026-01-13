@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Tables;
-
 
 use App\Enums\PaymentMethod;
 use App\Models\Invoice;
@@ -30,8 +28,7 @@ class InvoiceTable extends Table
         protected Currency $currency,
         protected bool $vatEnabled,
         protected string $moneyFormattingLocale,
-    )
-    {
+    ) {
         $this->defaultSorting(function (Builder $builder) {
             $builder
                 ->orderByRaw('CASE WHEN draft = 1 THEN 0 ELSE 1 END ASC')
@@ -170,13 +167,13 @@ class InvoiceTable extends Table
                 ->can(fn (Invoice $invoice) => Gate::allows('view', $invoice)),
 
             MarkInvoiceAsSentAction::make()
-                ->can(fn (Invoice $invoice) => Gate::allows('update', $invoice) && !$invoice->draft && !$invoice->sent),
+                ->can(fn (Invoice $invoice) => Gate::allows('update', $invoice) && ! $invoice->draft && ! $invoice->sent),
 
             Actions\Event::make('Pridať úhradu', 'addPayment')
-                ->can(fn (Invoice $invoice) => Gate::allows('update', $invoice) && !$invoice->draft && !$invoice->paid),
+                ->can(fn (Invoice $invoice) => Gate::allows('update', $invoice) && ! $invoice->draft && ! $invoice->paid),
 
             DuplicateInvoiceAction::make()
-                ->can(fn (Invoice $invoice) => Gate::allows('view', $invoice) && !$invoice->draft),
+                ->can(fn (Invoice $invoice) => Gate::allows('view', $invoice) && ! $invoice->draft),
 
             DiscardInvoiceDraftAction::make()
                 ->can(fn (Invoice $invoice) => Gate::allows('delete', $invoice) && $invoice->draft),

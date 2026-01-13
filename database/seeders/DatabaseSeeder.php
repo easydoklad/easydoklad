@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             ->first();
 
         if (! $template) {
-            throw new RuntimeException("The default document templates were not installed prior to running this seeder");
+            throw new RuntimeException('The default document templates were not installed prior to running this seeder');
         }
 
         $account = Account::factory()

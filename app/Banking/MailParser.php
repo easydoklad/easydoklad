@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Banking;
-
 
 use BeyondCode\Mailbox\InboundEmail;
 

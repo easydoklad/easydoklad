@@ -6,7 +6,6 @@ use App\Models\Account;
 use App\Models\Address;
 use App\Models\Company;
 use App\Models\DocumentTemplate;
-use App\Models\Invoice;
 use Laravel\Sanctum\Sanctum;
 
 function createAccount(): Account

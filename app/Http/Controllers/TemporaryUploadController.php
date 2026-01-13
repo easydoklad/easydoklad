@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers;
-
 
 use App\Facades\Accounts;
 use App\Models\TemporaryUpload;

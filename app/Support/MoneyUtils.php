@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Support;
-
 
 use Brick\Math\BigNumber;
 use Brick\Math\RoundingMode;
@@ -28,10 +26,10 @@ final readonly class MoneyUtils
     /**
      * Adds given amount of percent to the money.
      *
-     * @param \Brick\Money\Money $base The amount considered as 100%
-     * @param \Brick\Math\BigNumber|int|float $rate How much % of the base should be added
-     * @param \Brick\Math\RoundingMode|null $roundingMode
+     * @param  \Brick\Money\Money  $base  The amount considered as 100%
+     * @param  \Brick\Math\BigNumber|int|float  $rate  How much % of the base should be added
      * @return array{Money, Money} tupple: base + added money, only added money
+     *
      * @throws \Brick\Money\Exception\MoneyMismatchException
      */
     public static function addPercent(Money $base, BigNumber|int|float $rate, ?RoundingMode $roundingMode = RoundingMode::HALF_UP): array
@@ -58,10 +56,10 @@ final readonly class MoneyUtils
     /**
      * Subtracts given amount of percent from the money.
      *
-     * @param \Brick\Money\Money $base The amount considered as 100%
-     * @param \Brick\Math\BigNumber|int|float $rate How much % of the base should be subtracted
-     * @param \Brick\Math\RoundingMode|null $roundingMode
+     * @param  \Brick\Money\Money  $base  The amount considered as 100%
+     * @param  \Brick\Math\BigNumber|int|float  $rate  How much % of the base should be subtracted
      * @return array{Money, Money} tupple: base + subtracted money, only subtracted money
+     *
      * @throws \Brick\Money\Exception\MoneyMismatchException
      */
     public static function subPercent(Money $base, BigNumber|int|float $rate, ?RoundingMode $roundingMode = RoundingMode::HALF_UP): array

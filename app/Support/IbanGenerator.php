@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Support;
-
 
 class IbanGenerator
 {
@@ -22,7 +20,7 @@ class IbanGenerator
 
     public function getCheckCipher(string $checksum): string
     {
-        return str_pad(98 - bcmod($checksum, 97), 2, "0", STR_PAD_LEFT);
+        return str_pad(98 - bcmod($checksum, 97), 2, '0', STR_PAD_LEFT);
     }
 
     public function getChecksum(string $bankCode, string $bankAccountNr, string $locale): string
@@ -32,7 +30,7 @@ class IbanGenerator
 
     public function getBBAN(string $bankCode, string $bankAccountNr): string
     {
-        return $bankCode . str_pad($bankAccountNr, 10, "0", STR_PAD_LEFT);
+        return $bankCode.str_pad($bankAccountNr, 10, '0', STR_PAD_LEFT);
     }
 
     public function getNumericLanguageCode(string $locale): string
@@ -41,15 +39,15 @@ class IbanGenerator
             1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F', 7 => 'G', 8 => 'H',
             9 => 'I', 10 => 'J', 11 => 'K', 12 => 'L', 13 => 'M', 14 => 'N', 15 => 'O',
             16 => 'P', 17 => 'Q', 18 => 'R', 19 => 'S', 20 => 'T', 21 => 'U', 22 => 'V',
-            23 => 'W', 24 => 'X', 25 => 'Y', 26 => 'Z'
+            23 => 'W', 24 => 'X', 25 => 'Y', 26 => 'Z',
         ];
 
-        $numericLanguageCode = "";
+        $numericLanguageCode = '';
 
-        foreach(str_split($locale) as $char) {
+        foreach (str_split($locale) as $char) {
             $numericLanguageCode .= array_search($char, $alphabet) + 9;
         }
 
-        return $numericLanguageCode."00";
+        return $numericLanguageCode.'00';
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 use App\Banking\Camt053Parser;
 use App\Banking\PendingTransaction;
@@ -85,7 +83,7 @@ class BankingService extends Facade
             return;
         }
 
-        if (!$transaction->variable_symbol) {
+        if (! $transaction->variable_symbol) {
             return;
         }
 

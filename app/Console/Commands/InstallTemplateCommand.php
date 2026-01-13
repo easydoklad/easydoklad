@@ -20,7 +20,8 @@ class InstallTemplateCommand extends Command
         $path = $this->argument('path');
 
         if (! File::exists($path)) {
-            $this->error("Provided path does not exist");
+            $this->error('Provided path does not exist');
+
             return self::FAILURE;
         }
 

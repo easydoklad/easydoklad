@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Mail;
-
 
 use App\Banking\BankTransactionMailHandler;
 use App\Models\BankTransactionAccount;
@@ -14,7 +12,7 @@ class Mailbox
 {
     public function __construct(
         protected BankTransactionMailHandler $bankTransactionMailHandler,
-    ) { }
+    ) {}
 
     /**
      * Called when an email has been received by application.

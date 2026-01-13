@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Settings;
-
 
 use App\Facades\Accounts;
 use App\Models\TemporaryUpload;
@@ -30,7 +28,7 @@ class ChangeInvoiceSignatureController
         if ($remove && ($logo = $account->invoiceSignature)) {
             $account->invoiceSignature()->dissociate()->save();
             $logo->delete();
-        } else if ($file) {
+        } elseif ($file) {
             $temporaryUpload = TemporaryUpload::findOrFailByUUID($file);
             $upload = Upload::storePublicly($temporaryUpload);
             $account->invoiceSignature()->associate($upload)->save();

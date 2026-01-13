@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Analytics;
-
 
 use Closure;
 use Illuminate\Contracts\Support\Arrayable;
@@ -37,7 +35,7 @@ class Metric implements Arrayable
         protected mixed $value,
         protected mixed $previousValue,
         protected ?Link $link,
-    ) { }
+    ) {}
 
     /**
      * Show change tooltip containing value of the change.
@@ -161,7 +159,7 @@ class Metric implements Arrayable
     public function isInversed(mixed $value): bool
     {
         if ($value < 0) {
-            return !$this->inversed;
+            return ! $this->inversed;
         }
 
         return $this->inversed;
@@ -186,7 +184,7 @@ class Metric implements Arrayable
     /**
      * Format metric value for display.
      */
-    public function formatDisplayValue(mixed $value): string|null
+    public function formatDisplayValue(mixed $value): ?string
     {
         if ($this->formatUsing instanceof Closure) {
             return call_user_func($this->formatUsing, $value);
@@ -243,7 +241,7 @@ class Metric implements Arrayable
 
         if ($change->trend() === Trend::Increasing) {
             return $this->inversed ? TrendStyle::Negative : TrendStyle::Positive;
-        } else if ($change->trend() === Trend::Decreasing) {
+        } elseif ($change->trend() === Trend::Decreasing) {
             return $this->inversed ? TrendStyle::Positive : TrendStyle::Negative;
         }
 

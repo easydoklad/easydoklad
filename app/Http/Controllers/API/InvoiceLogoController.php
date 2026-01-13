@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\API;
-
 
 use App\Facades\Accounts;
 use App\Models\Invoice;

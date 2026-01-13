@@ -1,29 +1,26 @@
 <?php
 
-
 namespace App\Analytics;
-
 
 use Brick\Money\Money;
 
 class MoneyMetric extends Metric
 {
     public function __construct(
-        string  $title,
+        string $title,
         ?string $description,
-        Money   $value,
-        ?Money  $previousValue,
-        ?Link   $link,
-        string  $moneyFormattingLocale = 'sk',
-    )
-    {
+        Money $value,
+        ?Money $previousValue,
+        ?Link $link,
+        string $moneyFormattingLocale = 'sk',
+    ) {
         parent::__construct($title, $description, $value, $previousValue, $link);
 
         $this->formatUsing(fn (Money $value) => $value->formatTo($moneyFormattingLocale));
     }
 
     /**
-     * @param Money $value
+     * @param  Money  $value
      */
     public function resolveNumericValue(mixed $value): int|float
     {
@@ -31,8 +28,8 @@ class MoneyMetric extends Metric
     }
 
     /**
-     * @param Money $value
-     * @param Money $previousValue
+     * @param  Money  $value
+     * @param  Money  $previousValue
      */
     public function calculateChange(mixed $value, mixed $previousValue): ?Change
     {
@@ -72,7 +69,7 @@ class MoneyMetric extends Metric
     }
 
     /**
-     * @param Money $value
+     * @param  Money  $value
      */
     public function isInversed(mixed $value): bool
     {

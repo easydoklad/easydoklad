@@ -21,7 +21,7 @@ class SendInvoiceMail extends Mailable implements ShouldQueue
         public string $message,
         public string $invoiceLocale,
         public string $moneyFormattingLocale,
-    ) { }
+    ) {}
 
     public function envelope(): Envelope
     {
@@ -47,8 +47,8 @@ class SendInvoiceMail extends Mailable implements ShouldQueue
         return [
             Attachment::fromData(
                 data: fn () => $this->invoice->renderToPdf($this->invoiceLocale, $this->moneyFormattingLocale),
-                name: $this->invoice->createFileName($this->invoiceLocale, "pdf"),
-            )->withMime('application/pdf')
+                name: $this->invoice->createFileName($this->invoiceLocale, 'pdf'),
+            )->withMime('application/pdf'),
         ];
     }
 }

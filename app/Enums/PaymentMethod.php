@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Enums;
-
 
 use Illuminate\Support\Collection;
 use StackTrace\Ui\Contracts\HasLabel;

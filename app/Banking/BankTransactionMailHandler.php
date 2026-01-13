@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Banking;
-
 
 use App\Enums\BankTransactionAccountType;
 use App\Models\BankTransactionAccount;
@@ -22,7 +20,7 @@ class BankTransactionMailHandler
 
     public function __construct(
         protected BankingService $bankingService,
-    ) { }
+    ) {}
 
     /**
      * Register a mail transaction parser for given account type.
@@ -43,9 +41,9 @@ class BankTransactionMailHandler
 
         if ($parser instanceof MailParser) {
             return $parser;
-        } else if ($parser instanceof Closure) {
+        } elseif ($parser instanceof Closure) {
             return call_user_func($parser);
-        } else if (is_string($parser)) {
+        } elseif (is_string($parser)) {
             return app($parser);
         }
 

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers;
-
 
 use App\Analytics\Chart;
 use App\Analytics\ChartValue;
@@ -46,7 +44,7 @@ class DashboardController
 
         $metrics = [
             MoneyMetric::make(
-                title: "Fakturovaný obrat",
+                title: 'Fakturovaný obrat',
                 value: Money::ofMinor(
                     minorAmount: $account
                         ->invoices()

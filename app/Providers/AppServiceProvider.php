@@ -11,7 +11,6 @@ use App\Models\User;
 use App\Services\AccountService;
 use App\Services\BankingService;
 use BeyondCode\Mailbox\Facades\Mailbox as MailboxRouter;
-use BeyondCode\Mailbox\InboundEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;

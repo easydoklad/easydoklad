@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Invoice;
-
 
 use App\Models\Invoice;
 use App\Templating\InvoiceSerializer;
@@ -15,7 +13,7 @@ class SerializeInvoiceController
     {
         Gate::authorize('view', $invoice);
 
-        abort_if($invoice->draft, 400, "The draft invoice cannot be serialized");
+        abort_if($invoice->draft, 400, 'The draft invoice cannot be serialized');
 
         $options = new SerializerOptions(
             locale: $invoice->template->resolveLocale(

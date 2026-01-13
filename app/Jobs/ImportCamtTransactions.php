@@ -18,7 +18,7 @@ class ImportCamtTransactions implements ShouldQueue
     public function __construct(
         public Account $account,
         public string $filePath,
-    ) { }
+    ) {}
 
     public function handle(BankingService $bankingService): void
     {
@@ -31,7 +31,6 @@ class ImportCamtTransactions implements ShouldQueue
                     $bankingService->pairTransaction($transaction);
                 });
         });
-
 
         Storage::deleteDirectory(File::dirname($this->filePath));
     }

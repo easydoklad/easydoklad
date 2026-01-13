@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Analytics;
-
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
@@ -88,7 +86,7 @@ class Chart implements Arrayable
      */
     public function hideLegend(bool $hide = true): static
     {
-        return $this->showLegend(!$hide);
+        return $this->showLegend(! $hide);
     }
 
     /**
@@ -147,6 +145,6 @@ class Chart implements Arrayable
      */
     public static function make(): static
     {
-        return new static();
+        return new static;
     }
 }

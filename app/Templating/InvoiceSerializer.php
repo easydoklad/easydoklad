@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Templating;
-
 
 use App\Models\Company;
 use App\Models\Invoice;
@@ -152,7 +150,7 @@ class InvoiceSerializer
             'additional_info_lines' => $company->additional_info
                 ? collect(explode(PHP_EOL, $company->additional_info))
                     ->map(fn (string $line) => trim($line))
-                    ->filter(fn (string $line) => !empty($line))
+                    ->filter(fn (string $line) => ! empty($line))
                     ->values()
                     ->all()
                 : [],

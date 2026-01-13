@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\View\Models;
-
 
 use App\Facades\Accounts;
 use App\Models\Account;
@@ -13,7 +11,7 @@ class UserViewModel extends ViewModel
 {
     public function __construct(
         protected User $user
-    ) { }
+    ) {}
 
     public function toView(): array
     {

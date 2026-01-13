@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Analytics;
-
 
 use Brick\Money\Currency;
 use Brick\Money\Money;
@@ -12,7 +10,7 @@ final readonly class ComparableMoneyValue
     public function __construct(
         public Money $current,
         public Money $previous
-    ) { }
+    ) {}
 
     /**
      * Create zero value.

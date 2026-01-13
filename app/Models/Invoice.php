@@ -45,17 +45,17 @@ use RuntimeException;
  * @property string|null $variable_symbol
  * @property string|null $specific_symbol
  * @property string|null $constant_symbol
- * @property boolean $show_pay_by_square
- * @property boolean $vat_reverse_charge
+ * @property bool $show_pay_by_square
+ * @property bool $vat_reverse_charge
  * @property string|null $public_invoice_number
  * @property string $currency
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine> $lines
  * @property \App\Models\Account $account
- * @property boolean $draft
- * @property boolean $sent
- * @property boolean $paid
- * @property boolean $locked
- * @property boolean $vat_enabled
+ * @property bool $draft
+ * @property bool $sent
+ * @property bool $paid
+ * @property bool $locked
+ * @property bool $vat_enabled
  * @property \App\Models\DocumentTemplate $template
  * @property string|null $footer_note
  * @property string|null $issued_by
@@ -181,10 +181,10 @@ class Invoice extends Model
         $recentlyPaid = false;
 
         if ($this->remaining_to_pay) {
-            if ($this->remaining_to_pay->isZero() && !$this->paid) {
+            if ($this->remaining_to_pay->isZero() && ! $this->paid) {
                 $this->paid = true;
                 $recentlyPaid = true;
-            } else if (!$this->remaining_to_pay->isZero() && $this->paid) {
+            } elseif (! $this->remaining_to_pay->isZero() && $this->paid) {
                 $this->paid = false;
             }
         }
@@ -249,7 +249,7 @@ class Invoice extends Model
     public function preventModifications(): void
     {
         if ($this->draft) {
-            throw new RuntimeException("The invoice draft cannot be locked");
+            throw new RuntimeException('The invoice draft cannot be locked');
         }
 
         $this->locked = true;
@@ -344,7 +344,7 @@ class Invoice extends Model
      */
     public function isPartiallyPaid(): bool
     {
-        return $this->remaining_to_pay && $this->total_to_pay && !$this->remaining_to_pay->isZero() && !$this->total_to_pay->isEqualTo($this->remaining_to_pay);
+        return $this->remaining_to_pay && $this->total_to_pay && ! $this->remaining_to_pay->isZero() && ! $this->total_to_pay->isEqualTo($this->remaining_to_pay);
     }
 
     /**
@@ -393,7 +393,7 @@ class Invoice extends Model
                             new BankAccount(
                                 iban: Str::replace(' ', '', $iban),
                                 bic: $this->supplier->bank_bic,
-                            )
+                            ),
                         ],
                         // TODO: urobit nastavitelne
                         // paymentDueDate: $this->payment_due_to?->format('Y-m-d'),
@@ -402,7 +402,7 @@ class Invoice extends Model
                         specificSymbol: $this->specific_symbol,
                         // TODO: Bug v bysqr
                         // paymentNote: $this->public_invoice_number ? "Uhrada FA {$this->public_invoice_number}" : null,
-                    )
+                    ),
                 ]
             );
         }
@@ -516,10 +516,7 @@ class Invoice extends Model
      *
      * @template TReturn
      *
-     * @param (callable(\App\Models\Invoice): (TReturn)) $callback
-     * @param int $for
-     * @param int $block
-     *
+     * @param  (callable(\App\Models\Invoice): (TReturn))  $callback
      * @return TReturn
      *
      * @throws \Illuminate\Contracts\Cache\LockTimeoutException

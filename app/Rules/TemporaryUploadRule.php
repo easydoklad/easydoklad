@@ -11,7 +11,7 @@ class TemporaryUploadRule implements ValidationRule
 {
     public function __construct(
         protected string $scope
-    ) { }
+    ) {}
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

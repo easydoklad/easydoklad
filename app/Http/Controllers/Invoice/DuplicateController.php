@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Invoice;
-
 
 use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +12,7 @@ class DuplicateController
     {
         Gate::authorize('view', $invoice);
 
-        abort_if($invoice->draft, 400, "Draft invoices cannot be duplicated");
+        abort_if($invoice->draft, 400, 'Draft invoices cannot be duplicated');
 
         $copy = DB::transaction(fn () => $invoice->duplicate());
 

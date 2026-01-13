@@ -9,5 +9,5 @@ final readonly class InvoicePaid implements ShouldDispatchAfterCommit
 {
     public function __construct(
         public Invoice $invoice
-    ) { }
+    ) {}
 }

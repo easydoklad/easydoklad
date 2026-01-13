@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Analytics;
-
 
 use Brick\Money\Money;
 
@@ -11,7 +9,7 @@ final readonly class ChartValue
     public function __construct(
         public string $label,
         public Money|int|float $value,
-    ) { }
+    ) {}
 
     public function getNumericValue(): int|float
     {

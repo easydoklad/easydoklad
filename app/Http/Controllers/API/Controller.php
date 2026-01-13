@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\API;
-
 
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

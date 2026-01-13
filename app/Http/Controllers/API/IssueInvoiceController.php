@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\API;
-
 
 use App\Facades\Accounts;
 use App\Models\Invoice;
@@ -10,14 +8,13 @@ use App\Models\InvoiceLine;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class IssueInvoiceController extends Controller
 {
     public function __invoke(Invoice $invoice)
     {
         abort_unless(Accounts::current()->is($invoice->account), 403);
-        abort_unless($invoice->draft, 400, "The invoice is already issued.");
+        abort_unless($invoice->draft, 400, 'The invoice is already issued.');
 
         $invoice->load([
             'supplier.address',

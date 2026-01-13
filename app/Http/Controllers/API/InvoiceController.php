@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\API;
-
 
 use App\Facades\Accounts;
 use App\Http\Requests\API\InvoiceRequest;
@@ -151,7 +149,7 @@ class InvoiceController extends Controller
         // TODO: Logo
         // TODO: Signature
 
-        abort_if($invoice->locked, 400, "The invoice is locked.");
+        abort_if($invoice->locked, 400, 'The invoice is locked.');
 
         $invoice->load([
             'customer.address',
@@ -190,7 +188,7 @@ class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         abort_unless(Accounts::current()->is($invoice->account), 403);
-        abort_if($invoice->locked, 400, "The invoice is locked.");
+        abort_if($invoice->locked, 400, 'The invoice is locked.');
 
         DB::transaction(fn () => $invoice->delete());
 

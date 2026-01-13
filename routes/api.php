@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API as Controllers;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->middleware('auth:api')->group(function () {
     Route::get('invoices', [Controllers\InvoiceController::class, 'index']);

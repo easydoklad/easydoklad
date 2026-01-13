@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 use App\Models\Account;
 use Illuminate\Contracts\Auth\Guard;
@@ -14,7 +12,7 @@ class AccountService
     public function __construct(
         protected Session $session,
         protected Guard $auth,
-    ) { }
+    ) {}
 
     /**
      * Get the current user account.
@@ -29,7 +27,7 @@ class AccountService
         }
 
         if (! $user) {
-            throw new InvalidArgumentException("The user is not authenticated");
+            throw new InvalidArgumentException('The user is not authenticated');
         }
 
         if ($id = $this->session->get('account')) {
@@ -56,7 +54,7 @@ class AccountService
         $user = $this->auth->user();
 
         if (! $user) {
-            throw new InvalidArgumentException("The user is not authenticated");
+            throw new InvalidArgumentException('The user is not authenticated');
         }
 
         if ($user->accounts->where('id', $account->id)->isNotEmpty()) {
@@ -66,7 +64,7 @@ class AccountService
             $user->last_account_id = $account->id;
             $user->save();
         } else {
-            throw new InvalidArgumentException("The user does not have permission to access this account");
+            throw new InvalidArgumentException('The user does not have permission to access this account');
         }
     }
 }

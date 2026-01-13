@@ -14,7 +14,7 @@ class IssueInvoiceRequest extends UpdateInvoiceRequest
             return false;
         }
 
-        abort_unless($invoice->draft, 400, "Only draft invoices can be issued");
+        abort_unless($invoice->draft, 400, 'Only draft invoices can be issued');
 
         return true;
     }

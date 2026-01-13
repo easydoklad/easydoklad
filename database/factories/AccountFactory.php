@@ -20,12 +20,12 @@ class AccountFactory extends Factory
             'invoice_variable_symbol_format' => 'RRRRMMCCCC',
             'invoice_payment_method' => PaymentMethod::BankTransfer,
             'invoice_footer_note' => fake()->sentence,
-            'invoice_mail_message' => <<<MESSAGE
+            'invoice_mail_message' => <<<'MESSAGE'
 # Vážený klient,
 
 v prílohe Vám zasielame elektronickú faktúru.
 MESSAGE
-,
+            ,
         ];
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Support;
-
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -12,7 +10,7 @@ class NumberSequenceFormatter
     public function __construct(
         protected string $format,
         protected Carbon $date,
-    ) { }
+    ) {}
 
     /**
      * Get the format the formatter is using.
@@ -33,8 +31,8 @@ class NumberSequenceFormatter
         // Escape fixed tokens
         $fixedTokens = [
             '\RRRR' => "\x01",
-            '\RR'   => "\x02",
-            '\MM'   => "\x03",
+            '\RR' => "\x02",
+            '\MM' => "\x03",
         ];
         foreach ($fixedTokens as $token => $replacement) {
             $format = Str::replace($token, $replacement, $format);
@@ -43,8 +41,9 @@ class NumberSequenceFormatter
         // Escape arbitrary C tokens
         $arbitraryEscapeMap = [];
         $format = Str::replaceMatches('/\\\\C{1,20}/', function (array $matches) use (&$arbitraryEscapeMap) {
-            $key = "__".count($arbitraryEscapeMap).'__';
+            $key = '__'.count($arbitraryEscapeMap).'__';
             $arbitraryEscapeMap[$key] = Str::ltrim($matches[0], '\\');
+
             return $key;
         }, $format);
 

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Banking\MailParsers;
-
 
 use App\Banking\MailParser;
 use App\Banking\PendingTransaction;
@@ -19,7 +17,7 @@ class TatraBankaBMailParser implements MailParser
 {
     public function __construct(
         protected IbanGenerator $ibanGenerator
-    ) { }
+    ) {}
 
     public function parse(InboundEmail $email): ?PendingTransaction
     {
@@ -132,7 +130,7 @@ class TatraBankaBMailParser implements MailParser
 
             try {
                 return Money::of($amount, $currency);
-            } catch (Throwable){
+            } catch (Throwable) {
                 //
             }
         }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Invoice;
-
 
 use App\Http\Requests\IssueInvoiceRequest;
 use App\Models\Invoice;
@@ -21,7 +19,7 @@ class IssueInvoiceController
             $invoice->whileLocked(fn () => DB::transaction(fn () => $invoice->issue()));
         } catch (LockTimeoutException) {
             return throw ValidationException::withMessages([
-                'public_invoice_number' => 'Nepodarilo sa vystaviť faktúru. Skúste to znovu.'
+                'public_invoice_number' => 'Nepodarilo sa vystaviť faktúru. Skúste to znovu.',
             ]);
         }
 
