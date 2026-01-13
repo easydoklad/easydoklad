@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('document_templates', function (Blueprint $table) {
             $table->id();
+            $table->uuid()->index();
             $table->foreignId('account_id')->nullable()->constrained('accounts');
             $table->string('document_type');
             $table->string('name');

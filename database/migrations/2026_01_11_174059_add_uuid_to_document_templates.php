@@ -9,6 +9,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('document_templates', 'uuid')) {
+            return;
+        }
+
         Schema::table('document_templates', function (Blueprint $table) {
             $table->uuid()->nullable()->after('id')->index();
         });

@@ -116,7 +116,7 @@ import UserMenuContent from '@/Components/UserMenuContent.vue'
 import type { BreadcrumbItem } from '@/Types'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useNavigation, NavigationButton, NavigationButtonIcon } from "@stacktrace/ui";
-import { MenuIcon, LayoutGridIcon, ChevronDownIcon, FileTextIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, LandmarkIcon } from 'lucide-vue-next'
+import { MenuIcon, LayoutGridIcon, ChevronDownIcon, FileTextIcon, BanknoteArrowDownIcon, LandmarkIcon } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { DevPreview } from '@/Components/FeatureFlags'
 

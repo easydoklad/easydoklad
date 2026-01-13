@@ -191,6 +191,7 @@ class InvoiceController
                 'payment_due_to' => now()->addDays($account->invoice_due_days - 1),
             ]);
 
+            // TODO: Bug - replikuje sa adresa ktora je potom rovnaka vo všetkych fakturach
             $supplier = $account->company->replicate();
             $supplier->save();
             $invoice->supplier()->associate($supplier);

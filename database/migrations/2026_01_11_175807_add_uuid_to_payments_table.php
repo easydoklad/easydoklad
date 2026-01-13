@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Payment;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +14,9 @@ return new class extends Migration
             $table->uuid()->nullable()->after('id')->index();
         });
 
-        DB::statement('UPDATE payments SET uuid = UUID()');
+        if (Payment::query()->count() > 0) {
+            DB::statement('UPDATE payments SET uuid = UUID()');
+        }
 
         Schema::table('payments', function (Blueprint $table) {
             $table->uuid()->nullable(false)->change();
