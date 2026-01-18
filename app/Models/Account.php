@@ -30,6 +30,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property string|null $invoice_mail_message
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\BankTransactionAccount> $bankTransactionAccounts
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Webhook> $webhooks
  */
 class Account extends Model
 {
@@ -89,6 +90,11 @@ class Account extends Model
     public function bankTransactions(): HasMany
     {
         return $this->hasMany(BankTransaction::class);
+    }
+
+    public function webhooks(): HasMany
+    {
+        return $this->hasMany(Webhook::class);
     }
 
     /**

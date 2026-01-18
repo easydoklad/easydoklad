@@ -10,6 +10,8 @@ use App\Mail\Mailbox;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\BankingService;
+use App\Webhooks\Events as WebhookEvents;
+use App\Webhooks\WebhookManager;
 use BeyondCode\Mailbox\Facades\Mailbox as MailboxRouter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -35,6 +37,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(BankTransactionMailHandler::class);
         $this->app->extend(BankTransactionMailHandler::class, function (BankTransactionMailHandler $handler) {
             return $handler->registerParser(BankTransactionAccountType::TatraBankBMail, TatraBankaBMailParser::class);
+        });
+
+        $this->app->singleton(WebhookManager::class);
+        $this->app->extend(WebhookManager::class, function (WebhookManager $manager) {
+            $manager->registerEvent(WebhookEvents\InvoiceCreated::class);
+            $manager->registerEvent(WebhookEvents\InvoiceDeleted::class);
+            $manager->registerEvent(WebhookEvents\InvoiceIssued::class);
+            $manager->registerEvent(WebhookEvents\InvoicePaid::class);
+            $manager->registerEvent(WebhookEvents\InvoiceUpdated::class);
+
+            return $manager;
         });
 
         Relation::enforceMorphMap([

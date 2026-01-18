@@ -27,6 +27,10 @@
               title: 'API kľúče',
               action: { route: 'settings.api-keys' },
             },
+            {
+              title: 'Webhooky',
+              action: { route: 'webhooks' },
+            },
           ]"
           orientation="vertical"
           variant="ghost"

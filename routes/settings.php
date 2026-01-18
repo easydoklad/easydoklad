@@ -10,6 +10,8 @@ use App\Http\Controllers\Settings\ChangeInvoiceSignatureController;
 use App\Http\Controllers\Settings\InvoiceController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\ToggleWebhookController;
+use App\Http\Controllers\Settings\WebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -43,4 +45,10 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/api-keys', [ApiKeyController::class, 'index'])->name('settings.api-keys');
     Route::post('settings/api-keys', [ApiKeyController::class, 'store'])->name('api-keys.store');
     Route::delete('settings/api-keys/{token}', [ApiKeyController::class, 'destroy'])->name('api-keys.destroy');
+
+    Route::get('settings/webhooks', [WebhookController::class, 'index'])->name('webhooks');
+    Route::post('settings/webhooks', [WebhookController::class, 'store'])->name('webhooks.store');
+    Route::patch('settings/webhooks/{webhook:uuid}', [WebhookController::class, 'update'])->name('webhooks.update');
+    Route::delete('settings/webhooks/{webhook:uuid}', [WebhookController::class, 'destroy'])->name('webhooks.destroy');
+    Route::post('settings/webhooks/{webhook:uuid}/toggle-active', ToggleWebhookController::class)->name('webhooks.toggle-active');
 });

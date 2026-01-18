@@ -1,6 +1,7 @@
 export * from './dates.ts'
 export * from './keyboard.ts'
 export * from './money.ts'
+export * from './strings.ts'
 
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
