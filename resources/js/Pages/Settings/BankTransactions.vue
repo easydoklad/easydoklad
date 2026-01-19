@@ -6,11 +6,18 @@
       <section class="space-y-6">
         <HeadingSmall title="Bankové účty" description="Prepojte bankové účty z podporovaných bánk a majte transakcie aj úhrady dokladov vždy automaticky spárované."/>
 
-        <div v-if="bankAccounts.length === 0" class="flex flex-col border items-center justify-center gap-4 px-6 py-12 border-dashed rounded-md">
-          <p class="text-sm">Zatiaľ nemáte pripojené žiadne bankové účty.</p>
-
-          <Button @click="bankTransactionAccountFormDialog.activate" size="sm" variant="outline" :icon="PlusIcon" label="Pripojiť bankový účet" />
-        </div>
+        <Empty v-if="bankAccounts.length === 0">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <LandmarkIcon />
+            </EmptyMedia>
+            <EmptyTitle>Žiadne prepojenia.</EmptyTitle>
+            <EmptyDescription>Zatiaľ nemáte pripojené žiadne bankové účty.</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button @click="bankTransactionAccountFormDialog.activate" size="sm" variant="outline" :icon="PlusIcon" label="Pripojiť bankový účet" />
+          </EmptyContent>
+        </Empty>
 
         <template v-else>
           <div class="flex flex-col divide-y">
@@ -32,11 +39,11 @@
                 <DropdownMenu>
                   <DropdownMenuTrigger>
                     <Button variant="ghost" size="icon">
-                      <EllipsisIcon />
+                      <EllipsisVerticalIcon />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem @select="confirmDestroyBankAccount(bankAccount.id)" variant="destructive">Odstrániť</DropdownMenuItem>
+                    <DropdownMenuItem @select="confirmDestroyBankAccount(bankAccount.id)" variant="destructive"><Trash2Icon /> Odstrániť</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -115,6 +122,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/Components/DropdownMenu'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from '@/Components/Empty'
 import { FormControl } from '@/Components/Form'
 import HeadingSmall from '@/Components/HeadingSmall.vue'
 import { useFlash } from '@/Composables/useFlash.ts'
@@ -124,7 +139,7 @@ import { Head, useForm } from '@inertiajs/vue3'
 import { type SelectOption, useToggle } from '@stacktrace/ui'
 import { nextTick, ref } from 'vue'
 import BankTransactionAccountDialog from './Dialogs/BankTransactionAccountDialog.vue'
-import { PlusIcon, EllipsisIcon, InfoIcon } from 'lucide-vue-next'
+import { PlusIcon, EllipsisVerticalIcon, InfoIcon, LandmarkIcon, Trash2Icon } from 'lucide-vue-next'
 import { BankAccountTypes } from '.'
 
 interface MailIntegrationDetails {

@@ -25,7 +25,11 @@
               <div class="flex flex-col">
                 <p class="text-sm font-medium">{{ webhook.name }}</p>
                 <p class="text-xs text-muted-foreground">{{ webhook.url }}</p>
-                <Badge variant="secondary" class="mt-1">{{ pluralize(':count udalosť|:count udalosti|:count udalostí', webhook.events.length) }}</Badge>
+                <div class="inline-flex flex-row items-center mt-1.5 gap-1">
+                  <Badge variant="secondary">{{ pluralize(':count udalosť|:count udalosti|:count udalostí', webhook.events.length) }}</Badge>
+                  <Badge v-if="webhook.active" variant="positive" class="border-transparent">Aktívny</Badge>
+                  <Badge v-else variant="destructive" class="border-transparent">Neaktívny</Badge>
+                </div>
               </div>
 
               <div class="inline-flex flex-row items-center ml-auto">

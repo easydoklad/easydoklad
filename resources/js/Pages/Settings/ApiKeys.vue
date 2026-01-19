@@ -6,11 +6,18 @@
       <section class="space-y-6">
         <HeadingSmall title="API kľúče" description="Tieto kľúče slúžia na autorizáciu pri používaní API."/>
 
-        <div v-if="apiKeys.length === 0" class="flex flex-col border items-center justify-center gap-4 px-6 py-12 border-dashed rounded-md">
-          <p class="text-sm">Zatiaľ nemáte vytvorené žiadne API kľúče.</p>
-
-          <Button @click="createApiKeyDialog.activate" size="sm" variant="outline" :icon="PlusIcon" label="Vytvoriť API kľúč" />
-        </div>
+        <Empty v-if="apiKeys.length === 0">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <KeySquareIcon />
+            </EmptyMedia>
+            <EmptyTitle>Žiadne API kľúče.</EmptyTitle>
+            <EmptyDescription>Zatiaľ nemáte vytvorené žiadne API kľúče.</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button @click="createApiKeyDialog.activate" size="sm" variant="outline" :icon="PlusIcon" label="Vytvoriť API kľúč" />
+          </EmptyContent>
+        </Empty>
 
         <template v-else>
           <div class="flex flex-col divide-y">
@@ -21,9 +28,16 @@
               </div>
 
               <div class="inline-flex flex-row items-center ml-auto">
-                <Button @click="confirmRevoke(apiKey.id)" variant="ghost-destructive" size="icon">
-                  <Trash2Icon />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button variant="ghost" size="icon">
+                      <EllipsisVerticalIcon />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem @select="confirmRevoke(apiKey.id)" variant="destructive"><Trash2Icon /> Odstrániť</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
@@ -85,6 +99,20 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/Components/Dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/Components/DropdownMenu'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from '@/Components/Empty'
 import { FormControl } from '@/Components/Form'
 import HeadingSmall from '@/Components/HeadingSmall.vue'
 import { Input } from '@/Components/Input'
@@ -93,7 +121,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import SettingsLayout from '@/Layouts/Settings/Layout.vue'
 import { Head, useForm } from '@inertiajs/vue3'
 import { asyncRouter, onActivated, onDeactivated, useToggle } from '@stacktrace/ui'
-import { PlusIcon, Trash2Icon } from 'lucide-vue-next'
+import { PlusIcon, Trash2Icon, KeySquareIcon, EllipsisVerticalIcon } from 'lucide-vue-next'
 import { ref } from 'vue'
 
 defineProps<{
