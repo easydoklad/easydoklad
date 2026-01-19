@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\API;
 
 use App\Facades\Accounts;
+use App\Facades\Webhook;
 use App\Http\Requests\API\InvoiceRequest;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
+use App\Webhooks\Events\InvoiceCreated;
+use App\Webhooks\Events\InvoiceDeleted;
+use App\Webhooks\Events\InvoiceIssued;
+use App\Webhooks\Events\InvoiceUpdated;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -141,6 +146,12 @@ class InvoiceController extends Controller
             return $invoice;
         });
 
+        Webhook::dispatch($invoice->account, new InvoiceCreated($invoice));
+
+        if (!$invoice->draft) {
+            Webhook::dispatch($invoice->account, new InvoiceIssued($invoice));
+        }
+
         return $invoice->toResource();
     }
 
@@ -182,6 +193,8 @@ class InvoiceController extends Controller
             $invoice->calculateTotals();
         });
 
+        Webhook::dispatch($invoice->account, new InvoiceUpdated($invoice));
+
         return $invoice->toResource();
     }
 
@@ -191,6 +204,8 @@ class InvoiceController extends Controller
         abort_if($invoice->locked, 400, 'The invoice is locked.');
 
         DB::transaction(fn () => $invoice->delete());
+
+        Webhook::dispatch($invoice->account, new InvoiceDeleted($invoice));
 
         return response()->noContent();
     }

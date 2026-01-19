@@ -2,7 +2,9 @@
 
 namespace App\Tables\Actions;
 
+use App\Facades\Webhook;
 use App\Models\Invoice;
+use App\Webhooks\Events\InvoiceCreated;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -28,10 +30,14 @@ class DuplicateInvoiceAction extends Action
 
     public function handle(Selection $selection): void
     {
-        DB::transaction(fn () => Invoice::query()->whereIn('id', $selection->all())->eachById(function (Invoice $invoice) {
+        $invoices = DB::transaction(fn () => Invoice::query()->whereIn('id', $selection->all())->get()->map(function (Invoice $invoice) {
             if (Gate::allows('view', $invoice) && ! $invoice->draft) {
-                $invoice->duplicate();
+                return $invoice->duplicate();
+            } else{
+                return null;
             }
         }));
+
+        $invoices->filter()->each(fn (Invoice $invoice) => Webhook::dispatch($invoice->account, new InvoiceCreated($invoice)));
     }
 }

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $active
  * @property string $secret
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\WebhookEvent> $events
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\DispatchedWebhook> $dispatchedWebhooks
  */
 class Webhook extends Model
 {
@@ -29,6 +30,7 @@ class Webhook extends Model
     {
         static::deleting(function (Webhook $webhook) {
             $webhook->events()->delete();
+            $webhook->dispatchedWebhooks()->delete();
         });
     }
 
@@ -40,5 +42,10 @@ class Webhook extends Model
     public function events(): HasMany
     {
         return $this->hasMany(WebhookEvent::class);
+    }
+
+    public function dispatchedWebhooks(): HasMany
+    {
+        return $this->hasMany(DispatchedWebhook::class);
     }
 }

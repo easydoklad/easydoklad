@@ -6,6 +6,7 @@ use App\Enums\Country;
 use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
 use App\Facades\Accounts;
+use App\Facades\Webhook;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Address;
 use App\Models\Company;
@@ -17,6 +18,9 @@ use App\Support\Locale;
 use App\Support\VatBreakdownLine;
 use App\Tables\Actions\DeletePaymentAction;
 use App\Tables\InvoiceTable;
+use App\Webhooks\Events\InvoiceCreated;
+use App\Webhooks\Events\InvoiceDeleted;
+use App\Webhooks\Events\InvoiceUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -209,12 +213,16 @@ class InvoiceController
             return $invoice;
         });
 
+        Webhook::dispatch($account, new InvoiceCreated($invoice));
+
         return to_route('invoices.show', $invoice);
     }
 
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
         DB::transaction(fn () => $request->updateInvoice($invoice));
+
+        Webhook::dispatch($invoice->account, new InvoiceUpdated($invoice));
 
         return back();
     }
@@ -224,6 +232,8 @@ class InvoiceController
         Gate::authorize('delete', $invoice);
 
         DB::transaction(fn () => $invoice->delete());
+
+        Webhook::dispatch($invoice->account, new InvoiceDeleted($invoice));
 
         if ($request->routeIs('invoices')) {
             return back();

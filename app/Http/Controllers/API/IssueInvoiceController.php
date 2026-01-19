@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Facades\Accounts;
+use App\Facades\Webhook;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
+use App\Webhooks\Events\InvoiceIssued;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -66,6 +68,8 @@ class IssueInvoiceController extends Controller
         } catch (LockTimeoutException) {
             abort(423, 'Nepodarilo sa vystaviť faktúru. Skúste to znovu.');
         }
+
+        Webhook::dispatch($invoice->account, new InvoiceIssued($invoice));
 
         return $invoice->toResource();
     }

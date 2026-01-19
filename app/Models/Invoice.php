@@ -180,7 +180,7 @@ class Invoice extends Model
 
         $recentlyPaid = false;
 
-        if ($this->remaining_to_pay) {
+        if ($this->remaining_to_pay && $this->total_to_pay && $this->total_to_pay->isPositive()) {
             if ($this->remaining_to_pay->isZero() && ! $this->paid) {
                 $this->paid = true;
                 $recentlyPaid = true;
