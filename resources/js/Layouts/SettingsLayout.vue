@@ -24,6 +24,10 @@
               action: { route: 'settings.bank-transactions' },
             },
             {
+              title: 'Používatelia',
+              action: { route: 'users' },
+            },
+            {
               title: 'API kľúče',
               action: { route: 'settings.api-keys' },
             },

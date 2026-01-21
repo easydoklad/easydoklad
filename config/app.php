@@ -4,6 +4,8 @@ use App\Enums\Country;
 
 return [
 
+    'invitation_expiration_hours' => 48,
+
     'default_vat_rates' => [
         Country::Slovakia->value => 23,
     ],

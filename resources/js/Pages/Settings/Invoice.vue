@@ -83,7 +83,7 @@ import { Head, useForm } from '@inertiajs/vue3'
 import HeadingSmall from '@/Components/HeadingSmall.vue'
 import { type BreadcrumbItem } from '@/Types'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import SettingsLayout from '@/Layouts/Settings/Layout.vue'
+import { SettingsLayout } from '@/Layouts'
 import { FormControl, FormSelect } from "@/Components/Form";
 import { Input } from '@/Components/Input'
 import { Textarea } from '@/Components/Textarea'

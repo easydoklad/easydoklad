@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -32,6 +33,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $invoice_mail_message
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\BankTransactionAccount> $bankTransactionAccounts
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Webhook> $webhooks
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserInvitation> $userInvitations
  */
 class Account extends Model
 {
@@ -98,6 +101,11 @@ class Account extends Model
         return $this->hasMany(Webhook::class);
     }
 
+    public function userInvitations(): HasMany
+    {
+        return $this->hasMany(UserInvitation::class);
+    }
+
     /**
      * Get the account currency.
      */
@@ -120,6 +128,14 @@ class Account extends Model
     public function getPreferredDocumentLocale(): string
     {
         return 'sk';
+    }
+
+    /**
+     * Get the current user with role.
+     */
+    public function getCurrentUser(): ?User
+    {
+        return $this->users->firstWhere('id', Auth::id());
     }
 
     /**

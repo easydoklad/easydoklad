@@ -7,10 +7,13 @@ use App\Http\Controllers\Settings\BankTransactionAccountController;
 use App\Http\Controllers\Settings\BankTransactionsController;
 use App\Http\Controllers\Settings\ChangeInvoiceLogoController;
 use App\Http\Controllers\Settings\ChangeInvoiceSignatureController;
+use App\Http\Controllers\Settings\ResendUserInvitationController;
+use App\Http\Controllers\Settings\UserInvitationController;
 use App\Http\Controllers\Settings\InvoiceController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\ToggleWebhookController;
+use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\Settings\WebhookController;
 use App\Http\Middleware\AccountSelectedMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -53,5 +56,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('settings/webhooks/{webhook:uuid}', [WebhookController::class, 'update'])->name('webhooks.update');
         Route::delete('settings/webhooks/{webhook:uuid}', [WebhookController::class, 'destroy'])->name('webhooks.destroy');
         Route::post('settings/webhooks/{webhook:uuid}/toggle-active', ToggleWebhookController::class)->name('webhooks.toggle-active');
+
+        Route::get('settings/users', [UserController::class, 'index'])->name('users');
+        Route::post('settings/user-invitations', [UserInvitationController::class, 'store'])->name('user-invitations.store');
+        Route::delete('settings/user-invitations/{invitation:uuid}', [UserInvitationController::class, 'destroy'])->name('user-invitations.destroy');
+        Route::post('settings/user-invitations/{invitation:uuid}/resend', ResendUserInvitationController::class)->name('user-invitations.resend');
     });
 });
