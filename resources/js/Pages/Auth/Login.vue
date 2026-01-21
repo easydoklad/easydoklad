@@ -49,10 +49,10 @@
         </Button>
       </div>
 
-      <!--<div class="text-center text-sm text-muted-foreground">-->
-      <!--  Ešte nemáte účet?-->
-      <!--  <TextLink :href="route('register')" :tabindex="6">Registrujte sa</TextLink>-->
-      <!--</div>-->
+      <div class="text-center text-sm text-muted-foreground">
+        Ešte nemáte účet?
+        <TextLink :href="route('register')" :tabindex="6">Registrujte sa</TextLink>
+      </div>
     </form>
   </AuthBase>
 </template>

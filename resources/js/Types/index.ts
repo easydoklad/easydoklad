@@ -28,6 +28,7 @@ export interface User {
   email: string
   avatar?: string
   emailVerifiedAt: string | null
+  accountSelected: boolean
   accounts: Array<{
     id: number
     name: string

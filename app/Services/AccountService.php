@@ -6,18 +6,27 @@ use App\Models\Account;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Session\Session;
 use InvalidArgumentException;
+use RuntimeException;
 
 class AccountService
 {
     public function __construct(
         protected Session $session,
         protected Guard $auth,
-    ) {}
+    ) { }
 
     /**
-     * Get the current user account.
+     * Check whether an account is selected.
      */
-    public function current(): Account
+    public function check(): bool
+    {
+        return $this->get() !== null;
+    }
+
+    /**
+     * Get the currently selected account.
+     */
+    public function get(): ?Account
     {
         /** @var \App\Models\User|\App\Models\Account $user */
         $user = $this->auth->user();
@@ -27,7 +36,7 @@ class AccountService
         }
 
         if (! $user) {
-            throw new InvalidArgumentException('The user is not authenticated');
+            return null;
         }
 
         if ($id = $this->session->get('account')) {
@@ -42,7 +51,23 @@ class AccountService
             }
         }
 
-        return $user->accounts->first();
+        if ($account = $user->accounts->first()) {
+            return $account;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the current user account or throw excaption when account is not selected.
+     */
+    public function current(): Account
+    {
+        if ($account = $this->get()) {
+            return $account;
+        }
+
+        throw new RuntimeException("The account is not selected");
     }
 
     /**

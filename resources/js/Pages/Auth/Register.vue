@@ -1,18 +1,18 @@
 <template>
-  <AuthBase title="Create an account" description="Enter your details below to create your account">
-    <Head title="Register"/>
+  <AuthBase title="Vytvoriť účet" description="Zadajte svoje údaje pre vytvorenie nového účtu">
+    <Head title="Registrácia"/>
 
     <form @submit.prevent="submit" class="flex flex-col gap-6">
       <div class="grid gap-6">
-        <FormControl for="name" label="Name" :error="form.errors.name">
-          <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" v-model="form.name" placeholder="Full name"/>
+        <FormControl for="name" label="Meno a priezvisko" :error="form.errors.name">
+          <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" v-model="form.name"/>
         </FormControl>
 
-        <FormControl for="email" label="Email address" :error="form.errors.email">
-          <Input id="email" type="email" required :tabindex="2" autocomplete="email" v-model="form.email" placeholder="email@example.com"/>
+        <FormControl for="email" label="E-Mail" :error="form.errors.email">
+          <Input id="email" type="email" required :tabindex="2" autocomplete="email" v-model="form.email"/>
         </FormControl>
 
-        <FormControl for="password" label="Password" :error="form.errors.password">
+        <FormControl for="password" label="Heslo" :error="form.errors.password">
           <Input
             id="password"
             type="password"
@@ -20,11 +20,10 @@
             :tabindex="3"
             autocomplete="new-password"
             v-model="form.password"
-            placeholder="Password"
           />
         </FormControl>
 
-        <FormControl for="password_confirmation" label="Confirm password" :error="form.errors.password_confirmation">
+        <FormControl for="password_confirmation" label="Potvrdenie hesla" :error="form.errors.password_confirmation">
           <Input
             id="password_confirmation"
             type="password"
@@ -32,18 +31,17 @@
             :tabindex="4"
             autocomplete="new-password"
             v-model="form.password_confirmation"
-            placeholder="Confirm password"
           />
         </FormControl>
 
         <Button type="submit" class="mt-2 w-full" tabindex="5" :disabled="form.processing" :processing="form.processing">
-          Create account
+          Vytvoriť účet
         </Button>
       </div>
 
       <div class="text-center text-sm text-muted-foreground">
-        Already have an account?
-        <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
+        Máte už účet?
+        <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Prihláste sa</TextLink>
       </div>
     </form>
   </AuthBase>

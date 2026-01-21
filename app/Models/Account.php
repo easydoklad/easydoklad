@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
 use Brick\Money\Currency;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -119,5 +120,36 @@ class Account extends Model
     public function getPreferredDocumentLocale(): string
     {
         return 'sk';
+    }
+
+    /**
+     * Make a new instance with default settings.
+     */
+    public static function makeWithDefaults(): static
+    {
+        $account = new static([
+            'invoice_due_days' => 14,
+            'invoice_numbering_format' => 'RRRRMMCCCC',
+            'invoice_variable_symbol_format' => 'RRRRMMCCCC',
+            'invoice_payment_method' => PaymentMethod::BankTransfer,
+            'invoice_mail_message' => <<<'MESSAGE'
+# Vážený klient,
+
+v prílohe Vám zasielame elektronickú faktúru.
+MESSAGE
+        ]);
+
+        $invoiceTemplate = DocumentTemplate::query()
+            ->where('document_type', DocumentType::Invoice)
+            ->where('is_default', true)
+            ->first();
+
+        if (! $invoiceTemplate) {
+            throw new RuntimeException("Invalid state: The default invoice template is not set up");
+        }
+
+        $account->invoiceTemplate()->associate($invoiceTemplate);
+
+        return $account;
     }
 }

@@ -2,16 +2,17 @@
   <AppLayout :breadcrumbs="breadcrumbItems">
     <Head title="Vzhľad"/>
 
-    <SettingsLayout>
+    <UserSettingsLayout>
       <div class="space-y-6">
         <HeadingSmall title="Nastavenie vzhľadu" description="Nastavte si preferovaný vzhľad aplikácie"/>
         <AppearanceTabs/>
       </div>
-    </SettingsLayout>
+    </UserSettingsLayout>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
+import UserSettingsLayout from '@/Layouts/UserSettingsLayout.vue'
 import { Head } from '@inertiajs/vue3';
 
 import AppearanceTabs from '@/Components/AppearanceTabs.vue';
@@ -19,7 +20,6 @@ import HeadingSmall from '@/Components/HeadingSmall.vue';
 import { type BreadcrumbItem } from '@/Types';
 
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsLayout from '@/Layouts/Settings/Layout.vue';
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {

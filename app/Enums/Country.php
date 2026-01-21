@@ -4,9 +4,10 @@ namespace App\Enums;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use StackTrace\Ui\Contracts\HasLabel;
 use StackTrace\Ui\SelectOption;
 
-enum Country: string
+enum Country: string implements HasLabel
 {
     case Slovakia = 'sk';
     case Germany = 'de';
@@ -20,6 +21,11 @@ enum Country: string
     public function name(): string
     {
         return __('countries.'.$this->value);
+    }
+
+    public function label(): string
+    {
+        return $this->name();
     }
 
     /**

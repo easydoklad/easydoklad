@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="border-b border-sidebar-border/80">
+    <div :class="{ 'border-b border-sidebar-border/80': !isAccountCreate }">
       <div class="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
         <!-- Mobile Menu -->
-        <div class="lg:hidden">
+        <div v-if="showNavigation" class="lg:hidden">
           <Sheet>
             <SheetTrigger :as-child="true">
               <Button variant="ghost" size="icon" class="mr-2 h-9 w-9">
@@ -39,7 +39,7 @@
         </Link>
 
         <!-- Desktop Menu -->
-        <div class="hidden h-full lg:flex lg:flex-1">
+        <div v-if="showNavigation" class="hidden h-full lg:flex lg:flex-1">
           <NavigationMenu class="ml-10 flex h-full items-stretch">
             <NavigationMenuList class="flex h-full items-stretch space-x-2">
               <NavigationMenuItem v-for="item in navigation" class="relative flex h-full items-center">
@@ -80,10 +80,10 @@
 
           <DropdownMenu>
             <DropdownMenuTrigger :as-child="true">
-              <Button variant="ghost">{{ account.name }}<ChevronDownIcon class="size-4" /></Button>
+              <Button variant="ghost">{{ account && showNavigation ? account.name : user.name }}<ChevronDownIcon class="size-4" /></Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" class="w-56">
-              <UserMenuContent :user="auth.user"/>
+              <UserMenuContent :user="auth.user" :show-account-navigation="showNavigation" />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -131,7 +131,12 @@ const props = withDefaults(defineProps<Props>(), {
 const page = usePage()
 const auth = computed(() => page.props.auth)
 
-const account = computed(() => page.props.auth.user.accounts.find(it => it.current)!)
+const account = computed(() => page.props.auth.user.accounts.find(it => it.current))
+const user = computed(() => page.props.auth.user)
+
+const isAccountCreate = computed(() => route().current('accounts.create') as boolean)
+const showNavigation = computed(() => !!account.value && !isAccountCreate.value)
+
 
 const navigation = useNavigation(computed(() => {
   const hasExpensesFeature = auth.value.user.features.expenses

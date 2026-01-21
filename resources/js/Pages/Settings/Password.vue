@@ -2,7 +2,7 @@
   <AppLayout :breadcrumbs="breadcrumbItems">
     <Head title="Nastavenia hesla"/>
 
-    <SettingsLayout>
+    <UserSettingsLayout>
       <div class="space-y-6">
         <HeadingSmall title="Aktualizácia hesla" description="Uistite sa, že používate dlhé, náhodné a bezpečné heslo"/>
 
@@ -45,14 +45,14 @@
           </div>
         </form>
       </div>
-    </SettingsLayout>
+    </UserSettingsLayout>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
 import { FormControl } from '@/Components/Form'
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsLayout from '@/Layouts/Settings/Layout.vue';
+import UserSettingsLayout from '@/Layouts/UserSettingsLayout.vue'
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 

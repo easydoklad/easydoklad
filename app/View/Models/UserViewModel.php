@@ -15,13 +15,14 @@ class UserViewModel extends ViewModel
 
     public function toView(): array
     {
-        $currentAccount = Accounts::current();
+        $currentAccount = Accounts::get();
 
         return [
             'name' => $this->user->name,
             'email' => $this->user->email,
             'emailVerifiedAt' => $this->user->email_verified_at,
             'avatar' => null,
+            'accountSelected' => $currentAccount !== null,
             'accounts' => $this->user->accounts->map(fn (Account $account) => [
                 'id' => $account->id,
                 'name' => $account->company->business_name,

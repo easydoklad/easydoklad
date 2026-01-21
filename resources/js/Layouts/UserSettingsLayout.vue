@@ -1,8 +1,8 @@
 <template>
   <div class="px-4 py-6">
     <Heading
-      title="Správa firmy"
-      description="Spravujte informácie Vašej firmy a nastavenia aplikácie"
+      title="Môj účet"
+      description="Vaše prihlasovacie údaje, e-mail a nastavenia zabezpečenia."
     />
 
     <div
@@ -12,24 +12,16 @@
         <TabsNavigation
           :menu="[
             {
-              title: 'Firma',
-              action: { route: 'accounts.edit' },
+              title: 'Osobné údaje',
+              action: { route: 'profile.edit' },
             },
             {
-              title: 'Faktúry',
-              action: { route: 'settings.invoices.edit' },
+              title: 'Heslo',
+              action: { route: 'password.edit' },
             },
             {
-              title: 'Bankové transakcie',
-              action: { route: 'settings.bank-transactions' },
-            },
-            {
-              title: 'API kľúče',
-              action: { route: 'settings.api-keys' },
-            },
-            {
-              title: 'Webhooky',
-              action: { route: 'webhooks' },
+              title: 'Vzhľad',
+              action: { route: 'appearance' },
             },
           ]"
           orientation="vertical"

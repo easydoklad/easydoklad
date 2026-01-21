@@ -2,7 +2,7 @@
   <AppLayout :breadcrumbs="breadcrumbs">
     <Head title="Používateľ"/>
 
-    <SettingsLayout>
+    <UserSettingsLayout>
       <div class="flex flex-col space-y-6">
         <HeadingSmall title="Používateľske nastavenia" description="Nastavte si osobné údaje a emailovú adresu"/>
 
@@ -47,11 +47,12 @@
       </div>
 
       <!--<DeleteUser/>-->
-    </SettingsLayout>
+    </UserSettingsLayout>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
+import UserSettingsLayout from '@/Layouts/UserSettingsLayout.vue'
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 import { FormControl } from '@/Components/Form'
@@ -60,7 +61,6 @@ import HeadingSmall from '@/Components/HeadingSmall.vue';
 import { Button } from '@/Components/Button';
 import { Input } from '@/Components/Input';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsLayout from '@/Layouts/Settings/Layout.vue';
 import { type BreadcrumbItem, type User } from '@/Types';
 
 interface Props {

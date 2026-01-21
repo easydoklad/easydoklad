@@ -1,6 +1,12 @@
 <?php
 
+use App\Enums\Country;
+
 return [
+
+    'default_vat_rates' => [
+        Country::Slovakia->value => 23,
+    ],
 
     'mailbox_domain' => env('MAILBOX_DOMAIN', 'example.com'),
 
