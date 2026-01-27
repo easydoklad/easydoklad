@@ -31,7 +31,7 @@ class UserInvitationController
                     $fail('Tento používateľ už má prístup k vašej firme.');
                 }
 
-                if ($account->userInvitations->map(fn (UserInvitation $invitation) => Str::lower($invitation->email))->contains(Str::lower($value))) {
+                if ($account->userInvitations()->whereNull('accepted_at')->get()->map(fn (UserInvitation $invitation) => Str::lower($invitation->email))->contains(Str::lower($value))) {
                     $fail('Tento používateľ už bol pozvaný.');
                 }
             }],

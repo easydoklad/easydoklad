@@ -18,6 +18,11 @@ declare module 'vite/client' {
 declare module '@inertiajs/core' {
   export interface InertiaConfig {
     flashDataType: {
+      toast?: {
+        title: string
+        content: string | null
+        variant: string
+      }
       completeBankMailIntegration?: {
         email: string
         helpLink: string | null

@@ -23,7 +23,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "sentry/sentry-laravel": "^4.15",
-        "stacktrace/ui": "^0.5.2",
+        "stacktrace/ui": "^0.7.3",
         "tightenco/ziggy": "^2.4"
     },
     "require-dev": {

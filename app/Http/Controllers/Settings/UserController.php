@@ -24,6 +24,7 @@ class UserController
 
         return Inertia::render('Settings/Users', [
             'users' => $account->users->sortBy('name')->values()->map(fn (User $user) => [
+                'id' => $user->uuid,
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->getRole()->asString(),
@@ -32,16 +33,20 @@ class UserController
                     'delete' => $canManageUsers && !$user->is($currentUser)
                 ],
             ]),
-            'invitations' => $account->userInvitations->map(fn (UserInvitation $invitation) => [
-                'id' => $invitation->uuid,
-                'email' => $invitation->email,
-                'role' => $invitation->role->label(),
-                'expired' => $invitation->isExpired(),
-                'can' => [
-                    'revoke' => $canManageUsers,
-                    'resend' => $canManageUsers,
-                ],
-            ]),
+            'invitations' => $account
+                ->userInvitations()
+                ->whereNull('accepted_at')
+                ->get()
+                ->map(fn (UserInvitation $invitation) => [
+                    'id' => $invitation->uuid,
+                    'email' => $invitation->email,
+                    'role' => $invitation->role->label(),
+                    'expired' => $invitation->isExpired(),
+                    'can' => [
+                        'revoke' => $canManageUsers,
+                        'resend' => $canManageUsers,
+                    ],
+                ]),
             'can' => [
                 'invite' => $canManageUsers,
             ],
@@ -51,5 +56,21 @@ class UserController
             ]),
             'expirationHours' => config('app.invitation_expiration_hours'),
         ]);
+    }
+
+    public function destroy(User $user)
+    {
+        $account = Accounts::current();
+
+        Gate::authorize('update', $account);
+        abort_unless($account->getCurrentUser()?->getRole() === UserAccountRole::Owner, 403);
+
+        if ($account->users->contains($user)) {
+            $account->users()->detach($user);
+        } else {
+            abort(404);
+        }
+
+        return back();
     }
 }

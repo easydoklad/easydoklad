@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AcceptInvitationController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Banking\BankTransactionController;
 use App\Http\Controllers\Banking\CamtImportController;
@@ -23,7 +24,11 @@ use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 Route::get('/', HomeController::class)->name('home');
 
+Route::get('/invitation/{invitation}', [AcceptInvitationController::class, 'create'])->name('accept-invitation');
+
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/invitation/{invitation}', [AcceptInvitationController::class, 'store'])->name('accept-invitation.store');
+
     Route::get('create-account', [AccountController::class, 'create'])->name('accounts.create');
     Route::post('accounts', [AccountController::class, 'store'])->name('accounts.store');
 

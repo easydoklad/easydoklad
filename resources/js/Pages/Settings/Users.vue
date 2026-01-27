@@ -37,7 +37,7 @@
             </div>
           </div>
 
-          <Button @click="inviteDialog.activate" size="sm" variant="outline" :icon="UserPlusIcon" label="Pozvať používateľa" />
+          <Button v-if="can.invite" @click="inviteDialog.activate" size="sm" variant="outline" :icon="UserPlusIcon" label="Pozvať používateľa" />
         </template>
       </section>
 
@@ -126,6 +126,7 @@ import { asyncRouter, onActivated, type SelectOption, useToggle } from '@stacktr
 import { EditIcon, EllipsisVerticalIcon, UserPlusIcon, Trash2Icon, SendIcon, ClockIcon, TriangleAlertIcon } from 'lucide-vue-next'
 
 interface User {
+  id: string
   name: string
   email: string
   role: 'owner' | 'user'
@@ -162,9 +163,9 @@ const edit = (user: User) => {
 
 }
 
-const destroy = (user: User) => {
-
-}
+const destroy = (user: User) => confirmDestructive('Skutočne chcete odstrániť vybraného používateľa? Používate už viac nebude mať prístup k vašej firme.', async () => {
+  await asyncRouter.delete(route('users.destroy', user.id))
+})
 
 const inviteDialog = useToggle()
 const inviteForm = useForm(() => ({

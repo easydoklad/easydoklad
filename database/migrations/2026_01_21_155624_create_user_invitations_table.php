@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('email');
             $table->tinyInteger('role');
             $table->timestamp('expires_at')->nullable();
+            $table->timestamp('accepted_at')->nullable();
             $table->timestamps();
         });
     }

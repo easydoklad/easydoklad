@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::post('settings/webhooks/{webhook:uuid}/toggle-active', ToggleWebhookController::class)->name('webhooks.toggle-active');
 
         Route::get('settings/users', [UserController::class, 'index'])->name('users');
+        Route::delete('settings/users/{user:uuid}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::post('settings/user-invitations', [UserInvitationController::class, 'store'])->name('user-invitations.store');
         Route::delete('settings/user-invitations/{invitation:uuid}', [UserInvitationController::class, 'destroy'])->name('user-invitations.destroy');
         Route::post('settings/user-invitations/{invitation:uuid}/resend', ResendUserInvitationController::class)->name('user-invitations.resend');
