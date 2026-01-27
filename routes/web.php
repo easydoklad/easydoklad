@@ -22,14 +22,6 @@ use App\Http\Middleware\AccountSelectedMiddleware;
 use Illuminate\Support\Facades\Route;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
-Route::get('test', function () {
-    $mail = new \App\Mail\InvitationMail(
-        \App\Models\UserInvitation::query()->latest()->first()
-    );
-
-    return $mail;
-});
-
 Route::get('/', HomeController::class)->name('home');
 
 Route::get('/invitation/{invitation}', [AcceptInvitationController::class, 'create'])->name('accept-invitation');
