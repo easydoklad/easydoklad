@@ -6,6 +6,7 @@ use App\Enums\UserAccountRole;
 use App\Mail\InvitationMail;
 use App\Models\Concerns\HasUuid;
 use Illuminate\Contracts\Cache\Lock;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Cache;
@@ -22,7 +23,8 @@ use Illuminate\Support\Facades\Mail;
  */
 class UserInvitation extends Model
 {
-    use HasUuid;
+    /** @use HasFactory<\Database\Factories\UserInvitationFactory> */
+    use HasFactory, HasUuid;
 
     protected $guarded = false;
 

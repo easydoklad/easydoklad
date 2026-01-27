@@ -16,7 +16,7 @@ class PaymentController
 {
     public function store(Request $request, Invoice $invoice)
     {
-        Gate::allows('update', $invoice);
+        Gate::authorize('update', $invoice);
 
         abort_if($invoice->draft, 400, 'Draft invoices cannot be modified');
 

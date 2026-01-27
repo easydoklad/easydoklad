@@ -12,7 +12,7 @@ class ResendUserInvitationController
     public function __invoke(UserInvitation $invitation)
     {
         $account = Accounts::current();
-        Gate::allows('update', $account);
+        Gate::authorize('update', $account);
         abort_unless($account->getCurrentUser()?->getRole() === UserAccountRole::Owner, 403);
 
         $invitation->prolong();

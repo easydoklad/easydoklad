@@ -78,6 +78,7 @@
 
 ### 8. Controller Code Style (if modifying)
 - Use `abort_if()` or `abort_unless()` for simple abort conditions instead of `if` statements
+- When comparing Eloquent models, prefer calling `is()` on the model for comparison instead of comparing identifiers directly 
 
 ## Example Test Structure
 

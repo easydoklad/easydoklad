@@ -58,8 +58,10 @@ class UserInvitationController
     public function destroy(UserInvitation $invitation)
     {
         $account = Accounts::current();
-        Gate::allows('update', $account);
+        Gate::authorize('update', $account);
         abort_unless($account->getCurrentUser()?->getRole() === UserAccountRole::Owner, 403);
+        abort_unless($invitation->account->is($account), 404);
+        abort_if($invitation->isAccepted(), 400);
 
         DB::transaction(fn () => $invitation->delete());
 
