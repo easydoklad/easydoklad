@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\UserAccountRole;
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -17,7 +19,7 @@ use Laravel\Pennant\Concerns\HasFeatures;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasFeatures, Notifiable;
+    use HasFactory, HasFeatures, HasUuid, Notifiable;
 
     protected $guarded = false;
 
@@ -37,5 +39,17 @@ class User extends Authenticatable
     public function accounts(): BelongsToMany
     {
         return $this->belongsToMany(Account::class)->withPivot(['role']);
+    }
+
+    /**
+     * Get a user role within account, if loaded.
+     */
+    public function getRole(): ?UserAccountRole
+    {
+        if ($this->pivot) {
+            return UserAccountRole::from($this->pivot->role);
+        }
+
+        return null;
     }
 }
