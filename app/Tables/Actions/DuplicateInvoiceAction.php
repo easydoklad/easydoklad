@@ -33,7 +33,7 @@ class DuplicateInvoiceAction extends Action
         $invoices = DB::transaction(fn () => Invoice::query()->whereIn('id', $selection->all())->get()->map(function (Invoice $invoice) {
             if (Gate::allows('view', $invoice) && ! $invoice->draft) {
                 return $invoice->duplicate();
-            } else{
+            } else {
                 return null;
             }
         }));

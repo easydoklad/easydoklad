@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Settings;
-
 
 use App\Enums\UserAccountRole;
 use App\Facades\Accounts;

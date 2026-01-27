@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers;
-
 
 use App\Facades\Accounts;
 use App\Models\UserInvitation;
@@ -18,7 +16,7 @@ class AcceptInvitationController
         /** @var UserInvitation $invitation */
         $invitation = UserInvitation::query()->firstWhere('token', $invitation);
 
-        if (!$invitation || $invitation->isExpired() || $invitation->isAccepted()) {
+        if (! $invitation || $invitation->isExpired() || $invitation->isAccepted()) {
             return Inertia::render('Account/AcceptInvitationPage', [
                 'status' => match (true) {
                     $invitation && $invitation->isAccepted() => 'accepted',
@@ -57,6 +55,7 @@ class AcceptInvitationController
 
         if ($user->accounts->contains($invitation->account)) {
             Toast::destructive('Už máte prístup k tejto firme.');
+
             return back();
         }
 
@@ -67,11 +66,13 @@ class AcceptInvitationController
 
             if ($invitation->isAccepted()) {
                 Toast::destructive('Táto pozvánka už bola akceptovaná.');
+
                 return back();
             }
 
             if ($invitation->isExpired()) {
                 Toast::destructive('Platnosť tejto pozvánky vypršala.');
+
                 return back();
             }
 

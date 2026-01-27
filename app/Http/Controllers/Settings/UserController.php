@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Settings;
-
 
 use App\Enums\UserAccountRole;
 use App\Facades\Accounts;
@@ -31,8 +29,8 @@ class UserController
                 'email' => $user->email,
                 'role' => $user->getRole()->asString(),
                 'can' => [
-                    'update' => $canManageUsers && !$user->is($currentUser),
-                    'delete' => $canManageUsers && !$user->is($currentUser)
+                    'update' => $canManageUsers && ! $user->is($currentUser),
+                    'delete' => $canManageUsers && ! $user->is($currentUser),
                 ],
             ]),
             'invitations' => $account

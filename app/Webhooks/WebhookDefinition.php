@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Webhooks;
-
 
 use App\Enums\WebhookGroup;
 
@@ -12,5 +10,5 @@ final readonly class WebhookDefinition
         public string $id,
         public string $description,
         public WebhookGroup $group,
-    ) { }
+    ) {}
 }

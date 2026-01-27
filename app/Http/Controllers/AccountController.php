@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers;
-
 
 use App\Enums\Country;
 use App\Enums\UserAccountRole;

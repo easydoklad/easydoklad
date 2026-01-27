@@ -20,7 +20,7 @@ class RetryFailedWebhook extends Command
             $dispatch = DispatchedWebhook::findOrFailByUUID($id);
 
             if ($dispatch->delivered()) {
-                throw new InvalidArgumentException("The webhook has already been delivered.");
+                throw new InvalidArgumentException('The webhook has already been delivered.');
             }
 
             dispatch(new SendDispatchedWebhook($dispatch));

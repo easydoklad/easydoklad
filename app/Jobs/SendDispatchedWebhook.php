@@ -13,7 +13,7 @@ class SendDispatchedWebhook implements ShouldQueue
 
     public function __construct(
         public DispatchedWebhook $dispatch
-    ) { }
+    ) {}
 
     public function handle(WebhookManager $webhooks): void
     {

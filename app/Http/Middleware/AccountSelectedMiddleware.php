@@ -32,6 +32,6 @@ class AccountSelectedMiddleware
             return to_route('accounts.create');
         }
 
-        throw new RuntimeException("Invalid state. No account selected.");
+        throw new RuntimeException('Invalid state. No account selected.');
     }
 }

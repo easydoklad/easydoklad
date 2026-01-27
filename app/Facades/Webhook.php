@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Facades;
-
 
 use App\Webhooks\WebhookManager;
 use Illuminate\Support\Facades\Facade;

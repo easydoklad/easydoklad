@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Webhooks\Events;
-
 
 use App\Enums\WebhookGroup;
 use App\Models\Invoice;
@@ -13,7 +11,7 @@ class InvoiceDeleted extends WebhookEvent
 {
     public function __construct(
         protected Invoice $invoice
-    ) { }
+    ) {}
 
     public function payload(): array
     {

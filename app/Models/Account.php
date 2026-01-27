@@ -161,7 +161,7 @@ MESSAGE
             ->first();
 
         if (! $invoiceTemplate) {
-            throw new RuntimeException("Invalid state: The default invoice template is not set up");
+            throw new RuntimeException('Invalid state: The default invoice template is not set up');
         }
 
         $account->invoiceTemplate()->associate($invoiceTemplate);

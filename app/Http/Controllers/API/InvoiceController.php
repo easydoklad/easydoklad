@@ -148,7 +148,7 @@ class InvoiceController extends Controller
 
         Webhook::dispatch($invoice->account, new InvoiceCreated($invoice));
 
-        if (!$invoice->draft) {
+        if (! $invoice->draft) {
             Webhook::dispatch($invoice->account, new InvoiceIssued($invoice));
         }
 

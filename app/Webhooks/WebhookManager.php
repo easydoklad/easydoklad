@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Webhooks;
-
 
 use App\Jobs\SendDispatchedWebhook;
 use App\Models\Account;
@@ -66,10 +64,10 @@ class WebhookManager
         $eventName = $event::define()->id;
         $payload = $event->payload();
 
-        $toDispatch = DB::transaction(fn () => $webhooks->map(function (WebhookModel $webhook) use ($webhooks, $eventName, $payload) {
+        $toDispatch = DB::transaction(fn () => $webhooks->map(function (WebhookModel $webhook) use ($eventName, $payload) {
             $pendingDispatch = new DispatchedWebhook([
                 'event' => $eventName,
-                'payload' =>$payload,
+                'payload' => $payload,
                 'attempts' => 0,
             ]);
 

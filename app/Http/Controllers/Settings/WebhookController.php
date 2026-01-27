@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Settings;
-
 
 use App\Facades\Accounts;
 use App\Models\Webhook;
@@ -20,7 +18,7 @@ class WebhookController
 {
     public function __construct(
         protected WebhookManager $webhooks,
-    ) { }
+    ) {}
 
     public function index()
     {
@@ -39,7 +37,7 @@ class WebhookController
                 'events' => $definitions->map(fn (WebhookDefinition $definition) => [
                     'id' => $definition->id,
                     'description' => $definition->description,
-                ])->all()
+                ])->all(),
             ])
             ->all();
 

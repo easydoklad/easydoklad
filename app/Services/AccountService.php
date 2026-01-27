@@ -13,7 +13,7 @@ class AccountService
     public function __construct(
         protected Session $session,
         protected Guard $auth,
-    ) { }
+    ) {}
 
     /**
      * Check whether an account is selected.
@@ -67,7 +67,7 @@ class AccountService
             return $account;
         }
 
-        throw new RuntimeException("The account is not selected");
+        throw new RuntimeException('The account is not selected');
     }
 
     /**
