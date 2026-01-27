@@ -87,7 +87,9 @@ class UserController
         $account = Accounts::current();
 
         Gate::authorize('update', $account);
-        abort_unless($account->getCurrentUser()?->getRole() === UserAccountRole::Owner, 403);
+        $currentUser = $account->getCurrentUser();
+        abort_unless($currentUser?->getRole() === UserAccountRole::Owner, 403);
+        abort_if($user->is($currentUser), 403);
 
         if ($account->users->contains($user)) {
             $account->users()->detach($user);

@@ -2,10 +2,12 @@
 
 use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
+use App\Enums\UserAccountRole;
 use App\Models\Account;
 use App\Models\Address;
 use App\Models\Company;
 use App\Models\DocumentTemplate;
+use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 function createAccount(): Account
@@ -85,4 +87,29 @@ function actingAsSanctumAccount(?Account $account = null, $abilities = [], strin
     app('auth')->shouldUse($guard);
 
     return test();
+}
+
+/**
+ * Authenticate a user on a selected account using the web guard.
+ *
+ * @return mixed|\Pest\Concerns\Expectable|\Pest\PendingCalls\TestCall|\Pest\Support\HigherOrderTapProxy|\Tests\TestCase
+ */
+function actingAsAccount(
+    ?User $user = null,
+    ?Account $account = null,
+    ?UserAccountRole $role = null,
+) {
+    $user = $user ?: User::factory()->create();
+    $account = $account ?: createAccount();
+    $role = $role ?: UserAccountRole::Owner;
+
+    $account->users()->attach($user, [
+        'role' => $role->value,
+    ]);
+
+    return test()
+        ->actingAs($user, 'web')
+        ->withSession([
+            'account' => $account->id,
+        ]);
 }
