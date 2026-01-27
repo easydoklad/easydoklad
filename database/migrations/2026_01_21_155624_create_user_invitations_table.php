@@ -13,6 +13,8 @@ return new class extends Migration
             $table->uuid()->index();
             $table->string('token')->index();
             $table->foreignId('account_id')->constrained('accounts');
+            $table->foreignId('invited_by_id')->constrained('users');
+            $table->foreignId('accepted_by_id')->nullable()->constrained('users');
             $table->string('email');
             $table->tinyInteger('role');
             $table->timestamp('expires_at')->nullable();

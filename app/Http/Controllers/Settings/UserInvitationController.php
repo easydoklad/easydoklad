@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserInvitation;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -38,12 +39,16 @@ class UserInvitationController
             'role' => ['required', 'string', 'max:10', Rule::in(['owner', 'user'])],
         ]);
 
-        $invitation = $account->userInvitations()->create([
+        /** @var UserInvitation $invitation */
+        $invitation = $account->userInvitations()->make([
             'token' => Str::lower(Str::random(30)),
             'email' => $request->input('email'),
             'role' => UserAccountRole::fromString($request->input('role')),
             'expires_at' => now()->addHours(config('app.invitation_expiration_hours')),
         ]);
+
+        $invitation->invitedBy()->associate(Auth::user());
+        $invitation->save();
 
         $invitation->send();
 

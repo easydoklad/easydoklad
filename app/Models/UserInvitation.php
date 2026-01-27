@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Enums\UserAccountRole;
+use App\Mail\InvitationMail;
 use App\Models\Concerns\HasUuid;
 use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * @property string $email
@@ -15,6 +17,8 @@ use Illuminate\Support\Facades\Cache;
  * @property \App\Models\Account $account
  * @property \Carbon\Carbon $expires_at
  * @property \Carbon\Carbon|null $accepted_at
+ * @property \App\Models\User $invitedBy
+ * @property \App\Models\User|null $acceptedBy
  */
 class UserInvitation extends Model
 {
@@ -33,12 +37,22 @@ class UserInvitation extends Model
         return $this->belongsTo(Account::class);
     }
 
+    public function invitedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function acceptedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     /**
      * Send an invitation to the user.
      */
     public function send(): void
     {
-        // TODO: WIP
+        Mail::to($this->email)->send(new InvitationMail($this));
     }
 
     /**
@@ -78,9 +92,10 @@ class UserInvitation extends Model
             'role' => $this->role,
         ]);
 
-        $this->update([
-            'accepted_at' => now(),
-        ]);
+        $this->acceptedBy()->associate($user);
+        $this->accepted_at = now();
+
+        $this->save();
     }
 
     /**

@@ -8,7 +8,9 @@ use App\Enums\UserAccountRole;
 use App\Facades\Accounts;
 use App\Models\User;
 use App\Models\UserInvitation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use StackTrace\Ui\SelectOption;
 
@@ -56,6 +58,30 @@ class UserController
             ]),
             'expirationHours' => config('app.invitation_expiration_hours'),
         ]);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $account = Accounts::current();
+
+        Gate::authorize('update', $account);
+        abort_unless($account->getCurrentUser()?->getRole() === UserAccountRole::Owner, 403);
+
+        $request->validate([
+            'role' => ['required', 'string', 'max:10', Rule::in(['owner', 'user'])],
+        ]);
+
+        $role = UserAccountRole::fromString($request->input('role'));
+
+        if ($account->users->contains($user)) {
+            $account->users()->updateExistingPivot($user, [
+                'role' => $role,
+            ]);
+        } else {
+            abort(404);
+        }
+
+        return back();
     }
 
     public function destroy(User $user)

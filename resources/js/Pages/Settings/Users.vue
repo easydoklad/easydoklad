@@ -96,6 +96,23 @@
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    <Dialog :control="editDialog">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Upraviť používateľa</DialogTitle>
+        </DialogHeader>
+        <div class="flex flex-col mb-2">
+          <FormControl label="Prístup" :error="editForm.errors.role">
+            <FormSelect :options="roles" v-model="editForm.role" />
+          </FormControl>
+        </div>
+        <DialogFooter>
+          <Button variant="outline">Zrušiť</Button>
+          <Button :processing="editForm.processing" @click="saveUser">Uložiť</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </AppLayout>
 </template>
 
@@ -124,6 +141,7 @@ import { AppLayout, SettingsLayout } from '@/Layouts'
 import { Head, useForm } from '@inertiajs/vue3'
 import { asyncRouter, onActivated, type SelectOption, useToggle } from '@stacktrace/ui'
 import { EditIcon, EllipsisVerticalIcon, UserPlusIcon, Trash2Icon, SendIcon, ClockIcon, TriangleAlertIcon } from 'lucide-vue-next'
+import { ref } from 'vue'
 
 interface User {
   id: string
@@ -159,8 +177,25 @@ defineProps<{
 
 const { confirm, confirmDestructive } = useConfirmable()
 
+const editDialog = useToggle()
+const editedUser = ref<User>()
+const editForm = useForm(() => ({
+  role: editedUser.value?.role || 'user',
+}))
 const edit = (user: User) => {
-
+  editedUser.value = user
+  editForm.reset()
+  editDialog.activate()
+}
+const saveUser = () => {
+  const user = editedUser.value
+  if (user) {
+    editForm.patch(route('users.update', user.id), {
+      onSuccess: () => {
+        editDialog.deactivate()
+      }
+    })
+  }
 }
 
 const destroy = (user: User) => confirmDestructive('Skutočne chcete odstrániť vybraného používateľa? Používate už viac nebude mať prístup k vašej firme.', async () => {
