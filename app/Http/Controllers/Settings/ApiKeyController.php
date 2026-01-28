@@ -15,6 +15,8 @@ class ApiKeyController
     {
         $account = Accounts::current();
 
+        Gate::authorize('update', $account);
+
         return Inertia::render('Settings/ApiKeys', [
             'apiKeys' => $account->tokens->map(fn (PersonalAccessToken $token) => [
                 'id' => $token->id,

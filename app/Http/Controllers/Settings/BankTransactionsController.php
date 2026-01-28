@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Settings;
 use App\Facades\Accounts;
 use App\Models\BankTransactionAccount;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Gate;
 
 class BankTransactionsController
 {
     public function __invoke()
     {
         $account = Accounts::current();
+
+        Gate::authorize('update', $account);
 
         $bankAccounts = $account->bankTransactionAccounts;
 

@@ -157,6 +157,8 @@ class InvoiceController extends Controller
 
     public function update(InvoiceRequest $request, Invoice $invoice)
     {
+        abort_unless(Accounts::current()->is($invoice->account), 403);
+
         // TODO: Logo
         // TODO: Signature
 
