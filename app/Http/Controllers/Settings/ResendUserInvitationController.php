@@ -14,6 +14,7 @@ class ResendUserInvitationController
         $account = Accounts::current();
         Gate::authorize('update', $account);
         abort_unless($account->getCurrentUser()?->getRole() === UserAccountRole::Owner, 403);
+        abort_unless($account->is($invitation->account), 403);
 
         $invitation->prolong();
         $invitation->send();
