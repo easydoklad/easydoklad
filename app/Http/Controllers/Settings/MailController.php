@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Settings;
 
 
 use App\Facades\Accounts;
+use App\Rules\TranslatableRule;
 use App\Support\MailConfiguration;
 use App\Support\Patch;
+use App\Translation\TranslatableString;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
@@ -59,7 +61,7 @@ class MailController
                 MailConfiguration::FONT_ARIAL, MailConfiguration::FONT_HELVETICA,
                 MailConfiguration::FONT_TIMES_NEW_ROMAN, MailConfiguration::FONT_GEORGIA,
             ])],
-            'footer' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'footer' => ['sometimes', TranslatableRule::make(['string', 'max:1000'])->nullable()],
             'alignment' => ['sometimes', 'required', 'string', Rule::in([
                 MailConfiguration::ALIGN_LEFT, MailConfiguration::ALIGN_CENTER,
             ])],
@@ -70,7 +72,7 @@ class MailController
         $config = $account->getMailConfiguration();
 
         $patch->present('font', fn (string $font) => $config->setFont($font));
-        $patch->present('footer', fn (?string $footer) => $config->setFooter($footer));
+        $patch->present('footer', fn (?array $footer) => $config->setFooter(TranslatableString::fromArray($footer)));
         $patch->present('alignment', fn (string $alignment) => $config->setAlignment($alignment));
 
         $account->setMailConfiguration($config);

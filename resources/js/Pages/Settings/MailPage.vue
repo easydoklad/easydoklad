@@ -36,11 +36,19 @@
           </FormControl>
 
           <FormControl label="Pätička" :error="visualForm.errors.footer" help-variant="tooltip" help="Obsah pätičky pre odosielané správy. Text môžete formátovať pomocou syntaxe Markdown. Dostupné sú aj dynamické zástupné symboly (placeholdery) pre automatické vloženie vašich firemných údajov.">
-            <Textarea v-model="visualForm.footer" rows="4" />
-            <div class="inline-flex flex-row">
-              <Button @click="markdownHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs -mt-1" plain>Ako formátovať text?</Button>
-              <DotIcon class="size-4 mt-[7px]" />
-              <Button @click="replacementsHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs -mt-1" plain>Dynamické premenné</Button>
+            <div class="flex flex-col items-start">
+              <TranslatableTextarea
+                v-model="visualForm.footer"
+                button-side="right"
+                class="w-full"
+                rows="4"
+              />
+
+              <div class="inline-flex flex-row -mt-[36px]">
+                <Button type="button" @click="markdownHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Ako formátovať text?</Button>
+                <DotIcon class="size-4 mt-[10px]" />
+                <Button type="button" @click="replacementsHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Dynamické premenné</Button>
+              </div>
             </div>
           </FormControl>
 
@@ -63,7 +71,7 @@
 import { Button } from '@/Components/Button'
 import { FormCombobox, FormControl } from '@/Components/Form'
 import HeadingSmall from '@/Components/HeadingSmall.vue'
-import { Textarea } from '@/Components/Textarea'
+import { TranslatableTextarea } from '@/Components/Textarea'
 import { ToggleGroup, ToggleGroupItem } from '@/Components/ToggleGroup'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/Tooltip'
 import { AppLayout, SettingsLayout } from '@/Layouts'
@@ -71,10 +79,11 @@ import { Head, useForm } from '@inertiajs/vue3'
 import { type SelectOption, useToggle } from '@stacktrace/ui'
 import { TextAlignStartIcon, TextAlignCenterIcon, DotIcon } from 'lucide-vue-next'
 import { MarkdownHelpDialog, ReplacementsHelpDialog } from '@/Components/Help'
+import { type TranslatableString } from '@/Components/Translations'
 
 const props = defineProps<{
   font: string
-  footer: string
+  footer: TranslatableString | null
   alignment: string
 
   fonts: Array<SelectOption>

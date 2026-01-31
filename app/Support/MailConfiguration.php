@@ -4,6 +4,8 @@
 namespace App\Support;
 
 
+use App\Translation\RawString;
+use App\Translation\TranslatableString;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Fluent;
 
@@ -44,19 +46,30 @@ class MailConfiguration implements Arrayable
         return $this;
     }
 
-    public function footer(): string
+    public function footer(): ?TranslatableString
     {
-        return $this->config->string(
-            key: 'footer_content',
-            default: '{{ dodavatel.nazov }}, {{ dodavatel.adresa }}, {{ dodavatel.identifikatory }}'.PHP_EOL.'Tento e-mail bol vygenerovaný automaticky.',
-        );
+        if ($this->config->has('footer_content')) {
+            if ($value = $this->config->array('footer_content')) {
+                return TranslatableString::fromArray($value);
+            }
+
+            return null;
+        }
+
+        return TranslatableString::make(new RawString(
+            '{{ dodavatel.nazov }}, {{ dodavatel.adresa }}, {{ dodavatel.identifikatory }}'.PHP_EOL.'Tento e-mail bol vygenerovaný automaticky.'
+        ));
     }
 
-    public function setFooter(string $content): static
+    public function setFooter(?TranslatableString $content): static
     {
-        if ($this->footer() !== $content) {
-            $this->config->set('footer_content', $content);
+        $value = $this->footer();
+
+        if (TranslatableString::areEqual($value, $content)) {
+            return $this;
         }
+
+        $this->config->set('footer_content', $content?->toArray());
 
         return $this;
     }
