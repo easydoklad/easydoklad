@@ -17,7 +17,7 @@
           $attrs.class || ''
         )"
       >
-        <img class="h-32" v-if="preview" :src="preview" alt="">
+        <img class="h-32 object-contain" v-if="preview" :src="preview" alt="">
 
         <TooltipProvider :delay-duration="0" v-if="! disabled">
           <Tooltip @click.stop>

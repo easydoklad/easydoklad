@@ -5,6 +5,7 @@ use App\Http\Controllers\Settings\ApiKeyController;
 use App\Http\Controllers\Settings\BankAccountController;
 use App\Http\Controllers\Settings\BankTransactionAccountController;
 use App\Http\Controllers\Settings\BankTransactionsController;
+use App\Http\Controllers\Settings\BrandingController;
 use App\Http\Controllers\Settings\ChangeInvoiceLogoController;
 use App\Http\Controllers\Settings\ChangeInvoiceSignatureController;
 use App\Http\Controllers\Settings\InvoiceController;
@@ -63,5 +64,8 @@ Route::middleware('auth')->group(function () {
         Route::post('settings/user-invitations', [UserInvitationController::class, 'store'])->name('user-invitations.store');
         Route::delete('settings/user-invitations/{invitation:uuid}', [UserInvitationController::class, 'destroy'])->name('user-invitations.destroy');
         Route::post('settings/user-invitations/{invitation:uuid}/resend', ResendUserInvitationController::class)->name('user-invitations.resend');
+
+        Route::get('settings/branding', [BrandingController::class, 'index'])->name('branding');
+        Route::patch('settings/branding', [BrandingController::class, 'update'])->name('branding.update');
     });
 });

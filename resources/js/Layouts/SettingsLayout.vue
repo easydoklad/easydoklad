@@ -24,6 +24,10 @@
               action: { route: 'settings.bank-transactions' },
             },
             {
+              title: 'Vizuálna identita',
+              action: { route: 'branding' },
+            },
+            {
               title: 'Používatelia',
               action: { route: 'users' },
             },

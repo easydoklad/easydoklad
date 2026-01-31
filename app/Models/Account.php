@@ -27,6 +27,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property \App\Models\DocumentTemplate $invoiceTemplate
  * @property \App\Models\Upload|null $invoiceSignature
  * @property \App\Models\Upload|null $invoiceLogo
+ * @property \App\Models\Upload|null $squareLogo
+ * @property \App\Models\Upload|null $wideLogo
  * @property int $next_invoice_number
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\NumberSequence> $numberSequences
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
@@ -67,6 +69,16 @@ class Account extends Model
     }
 
     public function invoiceLogo(): BelongsTo
+    {
+        return $this->belongsTo(Upload::class);
+    }
+
+    public function wideLogo(): BelongsTo
+    {
+        return $this->belongsTo(Upload::class);
+    }
+
+    public function squareLogo(): BelongsTo
     {
         return $this->belongsTo(Upload::class);
     }

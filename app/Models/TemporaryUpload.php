@@ -127,6 +127,20 @@ class TemporaryUpload extends Model
                 'mimes:xml',
                 'max:25600',
             ],
+            'BrandingWideLogo' => [
+                'image',
+                'max:8192',
+                'dimensions:min_width=100,min_height=100,max_width=400,max_height=400',
+                'extensions:jpg,png,jpeg',
+                'mimes:jpg,png,jpeg',
+            ],
+            'BrandingSquareLogo' => [
+                'image',
+                'max:8192',
+                'dimensions:min_width=100,min_height=100,max_width=400,max_height=400,ratio=1/1',
+                'extensions:jpg,png,jpeg',
+                'mimes:jpg,png,jpeg',
+            ],
         ];
     }
 }
