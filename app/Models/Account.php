@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
+use App\Support\MailConfiguration;
 use Brick\Money\Currency;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +38,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Webhook> $webhooks
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserInvitation> $userInvitations
+ * @property array|null $mail_configuration
  */
 class Account extends Model
 {
@@ -50,6 +52,7 @@ class Account extends Model
         return [
             'invoice_payment_method' => PaymentMethod::class,
             'vat_enabled' => 'boolean',
+            'mail_configuration' => 'array',
         ];
     }
 
@@ -148,6 +151,26 @@ class Account extends Model
     public function getCurrentUser(): ?User
     {
         return $this->users->firstWhere('id', Auth::id());
+    }
+
+    /**
+     * Get the mail configuration.
+     */
+    public function getMailConfiguration(): MailConfiguration
+    {
+        return new MailConfiguration($this->mail_configuration ?: []);
+    }
+
+    /**
+     * Set the mail configuration.
+     */
+    public function setMailConfiguration(MailConfiguration $configuration): static
+    {
+        $value = $configuration->toArray();
+
+        $this->mail_configuration = empty($value) ? null : $value;
+
+        return $this;
     }
 
     /**

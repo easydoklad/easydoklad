@@ -19,7 +19,7 @@
           <TooltipTrigger>
             <InfoIcon class="size-4 text-muted-foreground ml-2" />
           </TooltipTrigger>
-          <TooltipContent class="max-w-sm">
+          <TooltipContent class="w-auto max-w-xs">
             {{ help }}
           </TooltipContent>
         </Tooltip>

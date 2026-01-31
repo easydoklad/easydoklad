@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::table('accounts', function (Blueprint $table) {
             $table->foreignId('wide_logo_id')->after('invoice_mail_message')->nullable()->constrained('uploads');
             $table->foreignId('square_logo_id')->after('invoice_mail_message')->nullable()->constrained('uploads');
+            $table->json('mail_configuration')->after('invoice_mail_message')->nullable();
         });
     }
 
@@ -19,6 +20,7 @@ return new class extends Migration
         Schema::table('accounts', function (Blueprint $table) {
             $table->dropConstrainedForeignId('wide_logo_id');
             $table->dropConstrainedForeignId('square_logo_id');
+            $table->dropColumn('mail_configuration');
         });
     }
 };

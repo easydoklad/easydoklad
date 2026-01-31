@@ -9,6 +9,7 @@ use App\Http\Controllers\Settings\BrandingController;
 use App\Http\Controllers\Settings\ChangeInvoiceLogoController;
 use App\Http\Controllers\Settings\ChangeInvoiceSignatureController;
 use App\Http\Controllers\Settings\InvoiceController;
+use App\Http\Controllers\Settings\MailController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\ResendUserInvitationController;
@@ -67,5 +68,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('settings/branding', [BrandingController::class, 'index'])->name('branding');
         Route::patch('settings/branding', [BrandingController::class, 'update'])->name('branding.update');
+
+        Route::get('settings/mail', [MailController::class, 'index'])->name('settings.mail');
+        Route::patch('settings/mail', [MailController::class, 'update'])->name('settings.mail.update');
     });
 });

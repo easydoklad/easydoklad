@@ -59,9 +59,9 @@ const props = withDefaults(defineProps<{
   nullable?: boolean
   modelValue?: V | null
 }>(), {
-  searchLabel: 'Search options…',
-  placeholder: 'Select option…',
-  notFoundLabel: 'No options found.',
+  searchLabel: 'Hľadať…',
+  placeholder: 'Vyberte možnosť…',
+  notFoundLabel: 'Nenašli sa žiadne možnosti.',
   nullable: false,
 })
 

@@ -28,6 +28,10 @@
               action: { route: 'branding' },
             },
             {
+              title: 'E-Mailová komunikácia',
+              action: { route: 'settings.mail' },
+            },
+            {
               title: 'Používatelia',
               action: { route: 'users' },
             },
