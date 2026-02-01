@@ -27,4 +27,36 @@ class Address extends Model
             'country' => Country::class,
         ];
     }
+
+    public function asMultipleLines(): ?array
+    {
+        $segments = collect([
+            $this->line_one,
+            $this->line_two,
+            $this->line_three,
+        ]);
+
+        if ($this->postal_code && $this->city) {
+            $segments->push("{$this->postal_code} {$this->city}");
+        } else if ($this->postal_code) {
+            $segments->push($this->postal_code);
+        } else if ($this->city) {
+            $segments->push($this->city);
+        }
+
+        $segments->push($this->country?->label());
+
+        $segments = $segments->filter(fn (?string $segment) => is_string($segment) && strlen($segment) > 0)->values();
+
+        return $segments->isNotEmpty() ? $segments->all() : null;
+    }
+
+    public function asSingleLine(string $glue = ', '): ?string
+    {
+        if ($lines = $this->asMultipleLines()) {
+            return implode($glue, $lines);
+        }
+
+        return null;
+    }
 }

@@ -5,8 +5,9 @@ namespace App\Models;
 use App\Casts\AsMoney;
 use App\Enums\PaymentMethod;
 use App\Events\InvoicePaid;
-use App\Mail\SendInvoiceMail;
+use App\Mail\InvoiceMail;
 use App\Models\Concerns\HasUuid;
+use App\Support\MarkdownReplacements;
 use App\Support\MoneyUtils;
 use App\Support\NumberSequenceFormatter;
 use App\Support\VatBreakdownLine;
@@ -446,14 +447,42 @@ class Invoice extends Model
      */
     public function send(string $email, string $message, ?string $locale = null): void
     {
-        $mail = new SendInvoiceMail(
-            invoice: $this,
-            message: $message,
-            invoiceLocale: $locale ?: $this->account->getPreferredDocumentLocale(),
-            moneyFormattingLocale: $this->account->getMoneyFormattingLocale(),
-        );
+        $mail = InvoiceMail::make($this, $message, $locale);
 
         Mail::to($email)->send($mail);
+    }
+
+    public function getMarkdownReplacements(): MarkdownReplacements
+    {
+        return $this->account->getMarkdownReplacements()->extend([
+            'invoice.number' => $this->public_invoice_number,
+
+            'supplier.business_name' => $this->supplier->business_name,
+            'supplier.business_id' => $this->supplier->business_id,
+            'supplier.vat_id' => $this->supplier->vat_id,
+            'supplier.eu_vat_id' => $this->supplier->eu_vat_id,
+            'supplier.identifiers' => $this->supplier->getIdentifiers(),
+            'supplier.address' => $this->supplier->address?->asSingleLine(),
+            'supplier.address_line_one' => $this->supplier->address?->line_one,
+            'supplier.address_line_two' => $this->supplier->address?->line_two,
+            'supplier.address_line_three' => $this->supplier->address?->line_three,
+            'supplier.address_city' => $this->supplier->address?->city,
+            'supplier.address_postal_code' => $this->supplier->address?->postal_code,
+            'supplier.address_country' => $this->supplier->address?->country?->label(),
+
+            'customer.business_name' => $this->customer->business_name,
+            'customer.business_id' => $this->customer->business_id,
+            'customer.vat_id' => $this->customer->vat_id,
+            'customer.eu_vat_id' => $this->customer->eu_vat_id,
+            'customer.identifiers' => $this->customer->getIdentifiers(),
+            'customer.address' => $this->customer->address?->asSingleLine(),
+            'customer.address_line_one' => $this->customer->address?->line_one,
+            'customer.address_line_two' => $this->customer->address?->line_two,
+            'customer.address_line_three' => $this->customer->address?->line_three,
+            'customer.address_city' => $this->customer->address?->city,
+            'customer.address_postal_code' => $this->customer->address?->postal_code,
+            'customer.address_country' => $this->customer->address?->country?->label(),
+        ]);
     }
 
     /**

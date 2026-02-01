@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $bank_bic
  * @property string|null $bank_account_number
  * @property string|null $bank_account_iban
- * @property \App\Models\Address|null $address
+ * @property-read \App\Models\Address|null $address
  */
 class Company extends Model
 {
@@ -32,5 +33,20 @@ class Company extends Model
     public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class);
+    }
+
+    public function getIdentifiers(string $glue = ', '): ?string
+    {
+        $segments = collect([
+            $this->business_id ? "IČO: {$this->business_id}" : null,
+            $this->vat_id ? "DIČ: {$this->vat_id}" : null,
+            $this->eu_vat_id ? "IČDPH: {$this->eu_vat_id}" : null,
+        ])->filter()->values();
+
+        if ($segments->isNotEmpty()) {
+            return $segments->join($glue);
+        }
+
+        return null;
     }
 }

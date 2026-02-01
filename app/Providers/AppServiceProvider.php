@@ -10,6 +10,7 @@ use App\Mail\Mailbox;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\BankingService;
+use App\Support\SafeMarkdownConverter;
 use App\Webhooks\Events as WebhookEvents;
 use App\Webhooks\WebhookManager;
 use BeyondCode\Mailbox\Facades\Mailbox as MailboxRouter;
@@ -33,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->alias(BankingService::class, 'banking');
 
         $this->app->singleton(Mailbox::class);
+
+        $this->app->singleton(SafeMarkdownConverter::class);
 
         $this->app->singleton(BankTransactionMailHandler::class);
         $this->app->extend(BankTransactionMailHandler::class, function (BankTransactionMailHandler $handler) {

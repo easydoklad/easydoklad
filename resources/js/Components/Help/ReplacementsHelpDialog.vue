@@ -13,7 +13,7 @@
           <Table class="border-y">
             <TableBody>
               <TableRow v-for="(description, replacement) in group.replacements" class="cursor-pointer" @click="copyReplacement(replacement)">
-                <TableCell class="pl-4"><code class="text-xs" v-html="`{{${replacement}}}`"></code></TableCell>
+                <TableCell class="pl-4"><code class="text-xs">:{{ replacement }}</code></TableCell>
                 <TableCell class="pr-4"><span>{{ description }}</span></TableCell>
               </TableRow>
             </TableBody>
@@ -53,7 +53,7 @@ defineProps<{
 const { copy } = useClipboard({ legacy: true })
 
 const copyReplacement = (value: string) => {
-  const val = `{{${value}}}`
+  const val = `:${value}`
 
   toast('Skopírované do schránky!', { description: val })
   copy(val)

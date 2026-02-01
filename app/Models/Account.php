@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
 use App\Support\MailConfiguration;
+use App\Support\MarkdownReplacements;
 use Brick\Money\Currency;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -171,6 +172,27 @@ class Account extends Model
         $this->mail_configuration = empty($value) ? null : $value;
 
         return $this;
+    }
+
+    /**
+     * Get Markdown replacements for the account.
+     */
+    public function getMarkdownReplacements(): MarkdownReplacements
+    {
+        return new MarkdownReplacements([
+            'company.business_name' => $this->company->business_name,
+            'company.business_id' => $this->company->business_id,
+            'company.vat_id' => $this->company->vat_id,
+            'company.eu_vat_id' => $this->company->eu_vat_id,
+            'company.identifiers' => $this->company->getIdentifiers(),
+            'company.address' => $this->company->address?->asSingleLine(),
+            'company.address_line_one' => $this->company->address?->line_one,
+            'company.address_line_two' => $this->company->address?->line_two,
+            'company.address_line_three' => $this->company->address?->line_three,
+            'company.address_city' => $this->company->address?->city,
+            'company.address_postal_code' => $this->company->address?->postal_code,
+            'company.address_country' => $this->company->address?->country?->label(),
+        ]);
     }
 
     /**
