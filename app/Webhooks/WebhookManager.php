@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\DispatchedWebhook;
 use App\Models\Webhook as WebhookModel;
 use App\Models\WebhookEvent as WebhookEventModel;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
@@ -122,6 +123,7 @@ class WebhookManager
                 ->withoutRedirecting()
                 ->withUserAgent('easyDoklad')
                 ->withBody($serialized)
+                ->when(app()->isLocal(), fn (PendingRequest $request) => $request->withoutVerifying())
                 ->timeout(10)
                 ->send('POST', $dispatch->webhook->url);
 
