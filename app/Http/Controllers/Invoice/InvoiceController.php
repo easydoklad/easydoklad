@@ -148,7 +148,6 @@ class InvoiceController
                 ->map(fn (DocumentTemplate $template) => new SelectOption($template->name, $template->id)),
             'templateLocales' => collect($invoice->template->getLocales())
                 ->map(fn (string $locale) => new SelectOption(Locale::name($locale), $locale)),
-            'mailMessage' => $account->invoice_mail_message,
             'isPaymentDue' => $invoice->isPaymentDue(),
             'isPartiallyPaid' => $invoice->isPartiallyPaid(),
 

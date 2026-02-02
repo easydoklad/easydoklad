@@ -39,7 +39,6 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $next_invoice_number
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\NumberSequence> $numberSequences
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
- * @property string|null $invoice_mail_message
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\BankTransactionAccount> $bankTransactionAccounts
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Webhook> $webhooks
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
@@ -258,11 +257,6 @@ class Account extends Model
             'invoice_numbering_format' => 'RRRRMMCCCC',
             'invoice_variable_symbol_format' => 'RRRRMMCCCC',
             'invoice_payment_method' => PaymentMethod::BankTransfer,
-            'invoice_mail_message' => <<<'MESSAGE'
-# Vážený klient,
-
-v prílohe Vám zasielame elektronickú faktúru.
-MESSAGE
         ]);
 
         $invoiceTemplate = DocumentTemplate::query()

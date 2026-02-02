@@ -159,7 +159,6 @@
       <SendInvoiceDialog
         :id="id"
         :email="customer.email || undefined"
-        :message="mailMessage || undefined"
         :control="sendDialog"
       />
 
