@@ -36,15 +36,10 @@
           </FormControl>
 
           <FormControl label="Pätička" :error="visualForm.errors.footer" help-variant="tooltip" help="Obsah pätičky pre odosielané správy. Text môžete formátovať pomocou syntaxe Markdown. Dostupné sú aj dynamické zástupné symboly (placeholdery) pre automatické vloženie vašich firemných údajov.">
+            <TranslatableTextarea v-model="visualForm.footer" rows="5" />
             <div class="flex flex-col items-start">
-              <TranslatableTextarea
-                v-model="visualForm.footer"
-                button-side="right"
-                class="w-full"
-                rows="4"
-              />
 
-              <div class="inline-flex flex-row -mt-[36px]">
+              <div class="inline-flex flex-row -mt-2">
                 <Button type="button" @click="markdownHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Ako formátovať text?</Button>
                 <DotIcon class="size-4 mt-[10px]" />
                 <Button type="button" @click="replacementsHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Dynamické premenné</Button>
@@ -53,6 +48,37 @@
           </FormControl>
 
           <Button type="submit" :processing="visualForm.processing" :recently-successful="visualForm.recentlySuccessful">Uložiť</Button>
+        </form>
+      </section>
+
+      <section>
+        <form @submit.prevent="saveContent">
+          <HeadingSmall title="Obsah e-mailov" description="Prispôsobte si obsah automaticky odosielaných e-mailových správ. Na formátovanie obsahu môžete použiť syntax Markdown."/>
+
+          <div class="inline-flex flex-row mb-2">
+            <Button type="button" @click="markdownHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Ako formátovať text?</Button>
+            <DotIcon class="size-4 mt-[10px]" />
+            <Button type="button" @click="replacementsHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Dynamické premenné</Button>
+          </div>
+
+          <div class="border p-4 rounded-md shadow-xs">
+            <h4 class="text-sm font-semibold mb-2">Odoslaná faktúra</h4>
+            <p class="text-sm text-muted-foreground">Tento email je odoslaný zákaznikovi ak mu z aplikácie odošlete faktúru. E-mail obsahuje aj PDF odoslanej faktúry.</p>
+
+            <FormControl class="mt-4" label="Predmet" :error="contentForm.errors.invoice_sent_subject">
+              <TranslatableInput v-model="contentForm.invoice_sent_subject" />
+            </FormControl>
+
+            <FormControl class="mt-4" label="Správa" :error="contentForm.errors.invoice_sent_message">
+              <TranslatableTextarea
+                v-model="contentForm.invoice_sent_message"
+                class="w-full"
+                rows="10"
+              />
+            </FormControl>
+          </div>
+
+          <Button class="mt-6" type="submit" :processing="contentForm.processing" :recently-successful="contentForm.recentlySuccessful">Uložiť</Button>
         </form>
       </section>
 
@@ -144,6 +170,7 @@ import { Button } from '@/Components/Button'
 import { FormCombobox, FormControl, FormSelect, FormTagsInput } from '@/Components/Form'
 import HeadingSmall from '@/Components/HeadingSmall.vue'
 import { Input } from '@/Components/Input'
+import TranslatableInput from '@/Components/Input/TranslatableInput.vue'
 import { Label } from '@/Components/Label'
 import { RadioGroup, RadioGroupItem } from '@/Components/RadioGroup'
 import { TranslatableTextarea } from '@/Components/Textarea'
@@ -173,6 +200,8 @@ const props = defineProps<{
   carbonCopy: Array<string>
   blindCarbonCopy: Array<string>
   replyTo: Array<string>
+  invoiceSentSubject: TranslatableString | null
+  invoiceSentMessage: TranslatableString | null
 
   fonts: Array<SelectOption>
   replacements: Array<{
@@ -244,6 +273,16 @@ const configErrorFor = (key: string): string | undefined => {
   }
 
   return undefined
+}
+
+const contentForm = useForm(() => ({
+  invoice_sent_subject: props.invoiceSentSubject,
+  invoice_sent_message: props.invoiceSentMessage,
+}))
+const saveContent = () => {
+  contentForm.patch(route('settings.mail.update'), {
+    preserveScroll: true,
+  })
 }
 
 const markdownHelp = useToggle()

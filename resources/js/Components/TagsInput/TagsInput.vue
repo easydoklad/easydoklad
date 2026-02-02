@@ -1,5 +1,9 @@
 <template>
-  <TagsInputRoot v-bind="forwarded" :class="cn('flex flex-wrap gap-2 items-center rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs', props.class)">
+  <TagsInputRoot v-bind="forwarded" :class="cn(
+    'flex flex-wrap gap-2 items-center rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs',
+    'transition-[color,box-shadow] focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]',
+    props.class
+  )">
     <slot />
   </TagsInputRoot>
 </template>

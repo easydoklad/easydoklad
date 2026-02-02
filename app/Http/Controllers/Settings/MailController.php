@@ -45,6 +45,8 @@ class MailController
             'carbonCopy' => $config->carbonCopy(),
             'blindCarbonCopy' => $config->blindCarbonCopy(),
             'replyTo' => $config->replyTo(),
+            'invoiceSentSubject' => $config->invoiceSentSubject(),
+            'invoiceSentMessage' => $config->invoiceSentMessage(),
 
             'fonts' => [
                 new SelectOption('Arial', MailConfiguration::FONT_ARIAL),
@@ -96,6 +98,8 @@ class MailController
             'blind_carbon_copy.*' => ['string', 'email', 'max:180'],
             'reply_to' => ['sometimes', 'array', 'min:0', 'max:10'],
             'reply_to.*' => ['string', 'email', 'max:180'],
+            'invoice_sent_subject' => ['sometimes', 'required', TranslatableRule::make(['string', 'max:1000'])->required()],
+            'invoice_sent_message' => ['sometimes', 'required', TranslatableRule::make(['string', 'max:5000'])->required()],
         ]);
 
         $patch = new Patch($input);
@@ -109,6 +113,8 @@ class MailController
         $patch->present('carbon_copy', fn (array $value) => $config->setCarbonCopy($value));
         $patch->present('blind_carbon_copy', fn (array $value) => $config->setBlindCarbonCopy($value));
         $patch->present('reply_to', fn (array $value) => $config->setReplyTo($value));
+        $patch->present('invoice_sent_subject', fn (?array $value) => $config->setInvoiceSentSubject(TranslatableString::fromArray($value)));
+        $patch->present('invoice_sent_message', fn (?array $value) => $config->setInvoiceSentMessage(TranslatableString::fromArray($value)));
 
         if ($request->has('sender')) {
             $config->setSender($sender = $request->input('sender'));

@@ -1,7 +1,17 @@
-import { computed, type ComputedRef, inject, provide, reactive, toRaw, toRefs, watch } from 'vue'
+import {
+  computed,
+  type ComputedRef,
+  inject,
+  provide,
+  reactive,
+  toRaw,
+  toRefs,
+  watch
+} from 'vue'
 import sortBy from 'lodash/sortBy'
 
 export { default as LocaleProvider } from './LocaleProvider.vue'
+export { default as LocalizedInlineInput } from './LocalizedInlineInput.vue'
 export { default as LocalizedTabInput } from './LocalizedTabInput.vue'
 
 export type RawString = { value: string | null }

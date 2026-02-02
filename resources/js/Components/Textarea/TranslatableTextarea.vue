@@ -17,7 +17,6 @@ import Textarea from './Textarea.vue'
 
 const emits = defineEmits<TranslatableInputEmits>()
 const props = defineProps<TranslatableInputProps & {
-  buttonSide?: 'left' | 'right'
   rows?: number | string
 }>()
 
