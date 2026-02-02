@@ -67,11 +67,11 @@ class MailConfiguration implements Arrayable
         return $default;
     }
 
-    protected function setLocalized(string $key, ?TranslatableString $content): static
+    protected function setLocalized(string $key, ?TranslatableString $content, bool $allowNull = false): static
     {
         $value = $this->localized($key);
 
-        if (TranslatableString::areEqual($value, $content)) {
+        if (TranslatableString::areEqual($value, $content) && !$allowNull) {
             return $this;
         }
 
@@ -157,7 +157,7 @@ class MailConfiguration implements Arrayable
 
     public function setHeader(?TranslatableString $value): static
     {
-        return $this->setLocalized('header_content', $value);
+        return $this->setLocalized('header_content', $value, allowNull: true);
     }
 
     public function showHeaderLogo(): bool
