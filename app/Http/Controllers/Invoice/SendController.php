@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use StackTrace\Ui\Facades\Toast;
-use StackTrace\Ui\Toaster;
 use Throwable;
 
 class SendController

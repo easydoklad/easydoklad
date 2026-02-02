@@ -10,6 +10,7 @@ Route::prefix('v1')->middleware('auth:api')->group(function () {
     Route::patch('invoices/{invoice:uuid}', [Controllers\InvoiceController::class, 'update']);
     Route::delete('invoices/{invoice:uuid}', [Controllers\InvoiceController::class, 'destroy']);
     Route::post('invoices/{invoice:uuid}/issue', Controllers\IssueInvoiceController::class);
+    Route::post('invoices/{invoice:uuid}/send', Controllers\SendInvoiceController::class)->middleware('throttle:mail');
     Route::get('invoices/{invoice:uuid}/signature', [Controllers\InvoiceSignatureController::class, 'show']);
     Route::get('invoices/{invoice:uuid}/logo', [Controllers\InvoiceLogoController::class, 'show']);
     // TODO: GET invoices/{invoice:uuid}/pay-by-square
