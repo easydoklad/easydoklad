@@ -50,11 +50,13 @@ class WebhookManager
         $webhookModel = new WebhookModel;
         $webhookEventModel = new WebhookEventModel;
 
+        $eventName = $event::define()->id;
+
         $webhooks = $account
             ->webhooks()
             ->select($webhookModel->qualifyColumn('*'))
             ->join($webhookEventModel->getTable(), $webhookModel->qualifyColumn('id'), $webhookEventModel->qualifyColumn('webhook_id'))
-            ->where($webhookEventModel->qualifyColumn('event'), 'invoice.updated')
+            ->where($webhookEventModel->qualifyColumn('event'), $eventName)
             ->where('active', true)
             ->get();
 
@@ -62,7 +64,6 @@ class WebhookManager
             return;
         }
 
-        $eventName = $event::define()->id;
         $payload = $event->payload();
 
         $toDispatch = DB::transaction(fn () => $webhooks->map(function (WebhookModel $webhook) use ($eventName, $payload) {
