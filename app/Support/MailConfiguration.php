@@ -144,7 +144,7 @@ class MailConfiguration implements Arrayable
 
     public function setFooter(?TranslatableString $content): static
     {
-        return $this->setLocalized('footer_content', $content);
+        return $this->setLocalized('footer_content', $content, allowNull: true);
     }
 
     public function header(): ?TranslatableString
