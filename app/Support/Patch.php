@@ -83,4 +83,12 @@ class Patch
     {
         return Arr::get($this->input, $key, $default);
     }
+
+    /**
+     * Determine whether given key is present on the request.
+     */
+    public function has(string $key): bool
+    {
+        return Arr::has($this->input, $key);
+    }
 }

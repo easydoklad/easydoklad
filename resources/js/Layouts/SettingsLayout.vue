@@ -24,6 +24,14 @@
               action: { route: 'settings.bank-transactions' },
             },
             {
+              title: 'Vizuálna identita',
+              action: { route: 'branding' },
+            },
+            {
+              title: 'E-Mailová komunikácia',
+              action: { route: 'settings.mail' },
+            },
+            {
               title: 'Používatelia',
               action: { route: 'users' },
             },

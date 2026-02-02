@@ -34,7 +34,13 @@ declare module '@inertiajs/core' {
   }
 
   interface PageProps extends InertiaPageProps, AppPageProps {
-    toasts: Array<BackendToast>
+    locales: Array<{
+      name: string
+      code: string
+      required: boolean
+    }>
+    locale: string
+    fallbackLocale: string
   }
 }
 

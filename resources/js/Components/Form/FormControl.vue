@@ -12,16 +12,29 @@
   </div>
 
   <FormItem class="form-control" v-else :class="{ 'has-error': !!error }">
-    <FormLabel v-if="label" :for="props.for || undefined" :error="props.error || ''">{{ label }} <span v-if="required" class="text-destructive">*</span></FormLabel>
+    <div v-if="label" class="inline-flex flex-row">
+      <FormLabel :for="props.for || undefined" :error="props.error || ''">{{ label }} <span v-if="required" class="text-destructive">*</span></FormLabel>
+      <TooltipProvider v-if="help && helpVariant === 'tooltip'">
+        <Tooltip>
+          <TooltipTrigger>
+            <InfoIcon class="size-4 text-muted-foreground ml-2" />
+          </TooltipTrigger>
+          <TooltipContent class="w-auto max-w-xs">
+            {{ help }}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
     <div class="w-full">
       <slot />
     </div>
-    <FormDescription v-if="help">{{ help }}</FormDescription>
+    <FormDescription v-if="help && helpVariant === 'inline'">{{ help }}</FormDescription>
     <FormMessage v-if="error && hideError !== true" :message="error" />
   </FormItem>
 </template>
 
 <script setup lang="ts">
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/Tooltip'
 import { computed } from "vue";
 import {
   FormItem,
@@ -31,6 +44,7 @@ import {
   type FormControlContext,
   provideFormControlContext
 } from "./";
+import { InfoIcon } from 'lucide-vue-next'
 
 const props = withDefaults(defineProps<{
   variant?: 'vertical' | 'horizontal'
@@ -40,8 +54,10 @@ const props = withDefaults(defineProps<{
   error?: string | null | undefined
   required?: boolean
   hideError?: boolean
+  helpVariant?: 'inline' | 'tooltip'
 }>(), {
   variant: 'vertical',
+  helpVariant: 'inline',
 })
 
 const context = computed<FormControlContext>(() => ({

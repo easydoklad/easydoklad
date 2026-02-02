@@ -4,13 +4,20 @@ namespace App\Models;
 
 use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
+use App\Support\MailConfiguration;
+use App\Support\MarkdownReplacements;
 use Brick\Money\Currency;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Fluent;
+use InvalidArgumentException;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -27,6 +34,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property \App\Models\DocumentTemplate $invoiceTemplate
  * @property \App\Models\Upload|null $invoiceSignature
  * @property \App\Models\Upload|null $invoiceLogo
+ * @property \App\Models\Upload|null $squareLogo
+ * @property \App\Models\Upload|null $wideLogo
  * @property int $next_invoice_number
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\NumberSequence> $numberSequences
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
@@ -35,6 +44,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Webhook> $webhooks
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserInvitation> $userInvitations
+ * @property array|null $mail_configuration
  */
 class Account extends Model
 {
@@ -48,6 +58,7 @@ class Account extends Model
         return [
             'invoice_payment_method' => PaymentMethod::class,
             'vat_enabled' => 'boolean',
+            'mail_configuration' => 'array',
         ];
     }
 
@@ -67,6 +78,16 @@ class Account extends Model
     }
 
     public function invoiceLogo(): BelongsTo
+    {
+        return $this->belongsTo(Upload::class);
+    }
+
+    public function wideLogo(): BelongsTo
+    {
+        return $this->belongsTo(Upload::class);
+    }
+
+    public function squareLogo(): BelongsTo
     {
         return $this->belongsTo(Upload::class);
     }
@@ -136,6 +157,95 @@ class Account extends Model
     public function getCurrentUser(): ?User
     {
         return $this->users->firstWhere('id', Auth::id());
+    }
+
+    /**
+     * Get the mail configuration.
+     */
+    public function getMailConfiguration(): MailConfiguration
+    {
+        return new MailConfiguration($this->mail_configuration ?: []);
+    }
+
+    /**
+     * Set the mail configuration.
+     */
+    public function setMailConfiguration(MailConfiguration $configuration): static
+    {
+        $value = $configuration->toArray();
+
+        $this->mail_configuration = empty($value) ? null : $value;
+
+        return $this;
+    }
+
+    /**
+     * Send given mail using account mail configuration.
+     */
+    public function sendMail(Mailable $mail, string|array $to): void
+    {
+        if (in_array(ShouldQueue::class, class_implements($mail))) {
+            throw new InvalidArgumentException("When sending account emails, ShouldQueue is not supported.");
+        }
+
+        $config = $this->getMailConfiguration();
+        $sender = $config->sender();
+        $mailer = new Fluent($config->mailer() ?: []);
+
+        $mail
+            ->from(
+                address: $sender === 'system' ? config('mail.documents_from.address') : $mailer->str('from')->value(),
+                name: ($config->senderName() ?: $this->company->business_name) ?: config('mail.documents_from.name'),
+            )
+            ->cc($config->carbonCopy())
+            ->bcc($config->blindCarbonCopy())
+            ->replyTo($config->replyTo())
+        ;
+
+        if ($config->sender() === 'system') {
+            $transport = Mail::mailer();
+        } else if ($mailer->value('driver') === 'smtp') {
+            $transport = Mail::build([
+                'transport' => 'smtp',
+                'host' => $mailer->value('host'),
+                'port' => $mailer->value('port'),
+                'username' => $mailer->value('username'),
+                'password' => $mailer->value('password'),
+            ]);
+        } else if ($mailer->value('driver') === 'sendgrid') {
+            $transport = Mail::build([
+                'transport' => 'smtp',
+                'host' => 'smtp.sendgrid.net',
+                'port' => 465,
+                'username' => 'apikey',
+                'password' => $mailer->value('api_key'),
+            ]);
+        } else {
+            throw new InvalidArgumentException("Invalid mailer configuration");
+        }
+
+        $transport->to($to)->sendNow($mail);
+    }
+
+    /**
+     * Get Markdown replacements for the account.
+     */
+    public function getMarkdownReplacements(): MarkdownReplacements
+    {
+        return new MarkdownReplacements([
+            'company.business_name' => $this->company->business_name,
+            'company.business_id' => $this->company->business_id,
+            'company.vat_id' => $this->company->vat_id,
+            'company.eu_vat_id' => $this->company->eu_vat_id,
+            'company.identifiers' => $this->company->getIdentifiers(),
+            'company.address' => $this->company->address?->asSingleLine(),
+            'company.address_line_one' => $this->company->address?->line_one,
+            'company.address_line_two' => $this->company->address?->line_two,
+            'company.address_line_three' => $this->company->address?->line_three,
+            'company.address_city' => $this->company->address?->city,
+            'company.address_postal_code' => $this->company->address?->postal_code,
+            'company.address_country' => $this->company->address?->country?->label(),
+        ]);
     }
 
     /**

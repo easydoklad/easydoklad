@@ -109,4 +109,20 @@ class Upload extends Model
             'file_path' => $dir.'/'.$fileName,
         ]);
     }
+
+    /**
+     * Add or remove file from the model.
+     */
+    public static function syncRelation(Model $model, string $relation, bool $remove, ?string $file): void
+    {
+        if ($remove && ($upload = $model->$relation)) {
+            $model->$relation()->dissociate()->save();
+            $upload->delete();
+        } else if ($file) {
+            $temporaryUpload = TemporaryUpload::findOrFailByUUID($file);
+            $upload = static::storePublicly($temporaryUpload);
+            $model->$relation()->associate($upload)->save();
+            $temporaryUpload->delete();
+        }
+    }
 }
