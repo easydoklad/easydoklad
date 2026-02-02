@@ -22,16 +22,6 @@ use App\Http\Middleware\AccountSelectedMiddleware;
 use Illuminate\Support\Facades\Route;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
-Route::get('test', function () {
-    $invoice = \App\Models\Invoice::findOrFailByUUID('3a5dbabb-70da-4731-875a-f2a4f037e660');
-
-    $mail = \App\Mail\InvoiceMail::make($invoice);
-
-    $invoice->account->sendMail($mail, to: 'peter@peterstovka.com');
-
-    return $mail;
-});
-
 Route::get('/', HomeController::class)->name('home');
 
 Route::get('/invitation/{invitation}', [AcceptInvitationController::class, 'create'])->name('accept-invitation');
