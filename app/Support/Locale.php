@@ -33,10 +33,20 @@ final readonly class Locale
     public static function all(): Collection
     {
         return collect([
-            new Locale('sk', 'Slovensky'),
-            new Locale('cs', 'Česky'),
-            new Locale('en', 'Anglicky'),
-            new Locale('de', 'Nemecky'),
+            new Locale('sk', 'Slovenčina'),
+            new Locale('cs', 'Čeština'),
+            new Locale('en', 'Angličtina'),
+            new Locale('de', 'Nemčina'),
         ]);
+    }
+
+    /**
+     * Get list of available locale codes.
+     *
+     * @return array<string>
+     */
+    public static function codes(): array
+    {
+        return Locale::all()->map(fn (Locale $locale) => $locale->code)->all();
     }
 }

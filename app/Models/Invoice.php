@@ -445,11 +445,13 @@ class Invoice extends Model
     /**
      * Send an invoice to given email address.
      */
-    public function send(string $email, string $message, ?string $locale = null): void
+    public function send(string $email, ?string $message = null, ?string $locale = null): void
     {
         $mail = InvoiceMail::make($this, $message, $locale);
 
-        Mail::to($email)->send($mail);
+        $this->account->sendMail($mail, to: $email);
+
+        $this->update(['sent' => true]);
     }
 
     public function getMarkdownReplacements(): MarkdownReplacements

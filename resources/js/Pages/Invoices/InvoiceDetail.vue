@@ -70,20 +70,18 @@
 
                     <Button v-else as="a" :href="route('invoices.download', id)" size="sm" label="Stiahnuť" :icon="FileDownIcon" />
 
-                    <!-- TODO: Pridať support pre email -->
-                    <!--<div v-if="! sent" class="inline-flex items-center">-->
-                    <!--  <Button @click="sendDialog.activate" class="rounded-r-none border-r-0" variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />-->
-                    <!--  <div class="h-full w-px bg-border"></div>-->
-                    <!--  <DropdownMenu>-->
-                    <!--    <DropdownMenuTrigger as-child>-->
-                    <!--      <Button size="sm" :icon="ChevronDownIcon" class="px-2 border-l-0 rounded-l-none" variant="outline" />-->
-                    <!--    </DropdownMenuTrigger>-->
-                    <!--    <DropdownMenuContent class="min-w-48" align="end">-->
-                    <!--      <DropdownMenuItem @select="confirmMarkAsSent">Označiť ako odoslanú</DropdownMenuItem>-->
-                    <!--    </DropdownMenuContent>-->
-                    <!--  </DropdownMenu>-->
-                    <!--</div>-->
-                    <Button v-if="!sent" @click="confirmMarkAsSent" variant="outline" size="sm" label="Označiť ako odoslanú" :icon="SendIcon" />
+                    <div v-if="! sent" class="inline-flex items-center">
+                      <Button @click="sendDialog.activate" class="rounded-r-none border-r-0" variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />
+                      <div class="h-full w-px bg-border"></div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                          <Button size="sm" :icon="ChevronDownIcon" class="px-2 border-l-0 rounded-l-none" variant="outline" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="min-w-48" align="end">
+                          <DropdownMenuItem @select="confirmMarkAsSent">Označiť ako odoslanú</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
 
                     <Button v-if="!paid" @click="showAddPaymentDialog" variant="outline" size="sm" label="Pridať úhradu" :icon="BanknoteIcon" />
 
@@ -103,7 +101,7 @@
                         <DropdownMenuSeparator />
 
                         <DropdownMenuLabel>Odoslať</DropdownMenuLabel>
-                        <!--<DropdownMenuItem @select="sendDialog.activate"><SendIcon /> Odoslať cez e-mail</DropdownMenuItem>-->
+                        <DropdownMenuItem @select="sendDialog.activate"><SendIcon /> Odoslať e-mailom</DropdownMenuItem>
                         <DropdownMenuItem v-if="sent" @select="confirmMarkAsNotSent"><MailXIcon /> Označiť ako neodoslanú</DropdownMenuItem>
                         <DropdownMenuItem v-else @select="confirmMarkAsSent"><MailCheckIcon /> Označiť ako odoslanú</DropdownMenuItem>
 
@@ -156,7 +154,6 @@
             </DataTable>
           </TabsContent>
         </Tabs>
-
       </div>
 
       <SendInvoiceDialog
@@ -207,7 +204,25 @@ import {
 import AppLayout from "@/Layouts/AppLayout.vue"
 import { notifyAboutFirstVisibleError, useSaveShortcut } from "@/Utils";
 import { Head, router, useForm } from "@inertiajs/vue3"
-import { LanguagesIcon, CalendarClockIcon, FilesIcon, Trash2Icon, MailCheckIcon, MailXIcon, CheckIcon, SaveIcon, SendIcon, FileDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
+import {
+  LanguagesIcon,
+  CalendarClockIcon,
+  FilesIcon,
+  Trash2Icon,
+  MailCheckIcon,
+  MailXIcon,
+  CheckIcon,
+  SaveIcon,
+  SendIcon,
+  FileDownIcon,
+  EllipsisIcon,
+  LockIcon,
+  LockOpenIcon,
+  KeySquareIcon,
+  BanknoteIcon,
+  ClipboardCheckIcon,
+  ChevronDownIcon
+} from "lucide-vue-next"
 import { computed, ref } from "vue"
 import { toast } from "vue-sonner"
 import { DataTable } from '@/Components/DataTable'
