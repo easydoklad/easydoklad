@@ -8,6 +8,7 @@ export { default as FormItem } from './FormItem.vue'
 export { default as FormLabel } from './FormLabel.vue'
 export { default as FormMessage } from './FormMessage.vue'
 export { default as FormSelect } from './FormSelect.vue'
+export { default as FormTagsInput } from './FormTagsInput.vue'
 
 const FormControlContextKey = Symbol()
 

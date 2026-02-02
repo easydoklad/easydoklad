@@ -27,7 +27,7 @@ Route::get('test', function () {
 
     $mail = \App\Mail\InvoiceMail::make($invoice);
 
-    \Illuminate\Support\Facades\Mail::to('peter@peterstovka.com')->send($mail);
+    $invoice->account->sendMail($mail, to: 'peter@peterstovka.com');
 
     return $mail;
 });

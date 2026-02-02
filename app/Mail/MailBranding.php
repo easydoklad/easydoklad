@@ -17,11 +17,6 @@ final readonly class MailBranding
         public string $alignment,
         public ?string $headerContent,
         public ?string $headerLogo,
-        public string $mailFromName,
-        public string $mailFromAddress,
-        public string|array|null $mailReplyTo,
-        public string|array|null $mailCc,
-        public string|array|null $mailBcc,
     ) { }
 
     public static function forAccount(Account $account, string $locale, ?MarkdownReplacements $replacements = null): MailBranding
@@ -56,11 +51,6 @@ final readonly class MailBranding
             alignment: $config->alignment(),
             headerContent: $headerContent,
             headerLogo: $headerLogo,
-            mailFromName: config('mail.from.name'), // TODO: CONFIG
-            mailFromAddress: config('mail.from.address'),
-            mailReplyTo: null, //$invoice->supplier->email ?: $account->company->email, // TODO: CONFIG
-            mailCc: null,
-            mailBcc: null,
         );
     }
 }

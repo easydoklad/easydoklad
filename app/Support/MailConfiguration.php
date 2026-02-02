@@ -8,6 +8,8 @@ use App\Translation\LocalizedString;
 use App\Translation\RawString;
 use App\Translation\TranslatableString;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Casts\Json;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Fluent;
 
 class MailConfiguration implements Arrayable
@@ -28,6 +30,28 @@ class MailConfiguration implements Arrayable
     public function __construct(array $data)
     {
         $this->config = new Fluent($data);
+    }
+
+    protected function encryptedArray(string $key, ?array $default = null): ?array
+    {
+        if ($this->config->has($key)) {
+            $value = $this->config->string($key)->value();
+
+            return Json::decode(Crypt::decryptString($value));
+        }
+
+        return $default;
+    }
+
+    protected function setEncryptedArray(string $key, ?array $value): static
+    {
+        if ($value) {
+            $this->config->set($key, Crypt::encryptString(Json::encode($value)));
+        } else if ($this->config->has($key)) {
+            unset($this->config[$key]);
+        }
+
+        return $this;
     }
 
     protected function localized(string $key, ?TranslatableString $default = null): ?TranslatableString
@@ -68,6 +92,39 @@ class MailConfiguration implements Arrayable
     {
         if ($this->font() !== $font) {
             $this->config->set('font', $font);
+        }
+
+        return $this;
+    }
+
+    public function sender(): string
+    {
+        return $this->config->string(
+            key: 'sender',
+            default: 'system',
+        );
+    }
+
+    public function setSender(string $value): static
+    {
+        if ($this->sender() !== $value) {
+            $this->config->set('sender', $value);
+        }
+
+        return $this;
+    }
+
+    public function senderName(): ?string
+    {
+        return $this->config->string(key: 'sender_name');
+    }
+
+    public function setSenderName(?string $value): static
+    {
+        if ($value) {
+            $this->config->set('sender_name', $value);
+        } else if ($this->config->has('sender_name')) {
+            unset($this->config['sender_name']);
         }
 
         return $this;
@@ -176,6 +233,76 @@ MAIL
     {
         if ($this->alignment() !== $alignment) {
             $this->config->set('alignment', $alignment);
+        }
+
+        return $this;
+    }
+
+    public function mailer(): ?array
+    {
+        return $this->encryptedArray('mailer');
+    }
+
+    public function setMailer(?array $config): static
+    {
+        return $this->setEncryptedArray('mailer', $config);
+    }
+
+    public function carbonCopy(): array
+    {
+        if ($this->config->has('carbon_copy')) {
+            return $this->config->array('carbon_copy');
+        }
+
+        return [];
+    }
+
+    public function setCarbonCopy(array $value): static
+    {
+        if (empty($value)) {
+            unset($this->config['carbon_copy']);
+        } else {
+            $this->config->set('carbon_copy', $value);
+        }
+
+        return $this;
+    }
+
+    public function blindCarbonCopy(): array
+    {
+        if ($this->config->has('blind_carbon_copy')) {
+            return $this->config->array('blind_carbon_copy');
+        }
+
+        return [];
+    }
+
+    public function setBlindCarbonCopy(array $value): static
+    {
+        if (empty($value)) {
+            unset($this->config['blind_carbon_copy']);
+        } else {
+            $this->config->set('blind_carbon_copy', $value);
+        }
+
+        return $this;
+    }
+
+    public function replyTo(): array
+    {
+        if ($this->config->has('reply_to')) {
+            return $this->config->array('reply_to');
+        }
+
+        return [];
+    }
+
+    public function setReplyTo(array $value): static
+    {
+        if (empty($value)) {
+            unset($this->config['reply_to']);
+        } else {
+            $this->config->set('reply_to', $value);
         }
 
         return $this;
