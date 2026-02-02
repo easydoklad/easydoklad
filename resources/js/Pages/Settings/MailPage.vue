@@ -5,7 +5,15 @@
     <SettingsLayout>
       <section>
         <form @submit.prevent="saveVisual" class="space-y-6">
-          <HeadingSmall title="Vzhľad e-mailov" description="Prispôsobte si vizuálny štýl, farebnosť a obsah pätičky tak, aby odosielané e-maily ladili s vašou identitou."/>
+          <div>
+            <HeadingSmall title="Vzhľad e-mailov" description="Prispôsobte si vizuálny štýl, farebnosť a obsah pätičky tak, aby odosielané e-maily ladili s vašou identitou."/>
+
+            <div class="inline-flex flex-row mt-2">
+              <Button type="button" @click="markdownHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Ako formátovať text?</Button>
+              <DotIcon class="size-4 mt-[10px]" />
+              <Button type="button" @click="replacementsHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Dynamické premenné</Button>
+            </div>
+          </div>
 
           <FormControl label="Zarovnanie prvkov" :error="visualForm.errors.alignment" help-variant="tooltip" help="Nastavte si ako bude zarovnané logo v hlavičke a text v pätičke. Obsah emailu je vždy zobrazený na celú šírku a zarovnaný vľavo.">
             <TooltipProvider :delay-duration="0">
@@ -35,16 +43,16 @@
             <FormCombobox :options="fonts" v-model="visualForm.font" class="max-w-xs" />
           </FormControl>
 
+          <FormControl label="Hlavička" :error="visualForm.errors.header" help-variant="tooltip" help="Obsah hlavičky pre odosielané správy. Text môžete formátovať pomocou syntaxe Markdown. Dostupné sú aj dynamické zástupné symboly (placeholdery) pre automatické vloženie vašich firemných údajov.">
+            <TranslatableTextarea v-model="visualForm.header" rows="3" />
+          </FormControl>
+
+          <FormControl label="Logo v hlavičke" :error="visualForm.errors.show_header_logo" help-variant="tooltip" help="Logo v hlavičke sa zobrazí ak je nahrané v sekcii Vizuálna identita.">
+            <SwitchControl v-model="visualForm.show_header_logo" class="mt-2">Zobraziť v hlavičke logo firmy</SwitchControl>
+          </FormControl>
+
           <FormControl label="Pätička" :error="visualForm.errors.footer" help-variant="tooltip" help="Obsah pätičky pre odosielané správy. Text môžete formátovať pomocou syntaxe Markdown. Dostupné sú aj dynamické zástupné symboly (placeholdery) pre automatické vloženie vašich firemných údajov.">
             <TranslatableTextarea v-model="visualForm.footer" rows="5" />
-            <div class="flex flex-col items-start">
-
-              <div class="inline-flex flex-row -mt-2">
-                <Button type="button" @click="markdownHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Ako formátovať text?</Button>
-                <DotIcon class="size-4 mt-[10px]" />
-                <Button type="button" @click="replacementsHelp.activate" variant="link" class="text-muted-foreground px-0 text-xs" plain>Dynamické premenné</Button>
-              </div>
-            </div>
           </FormControl>
 
           <Button type="submit" :processing="visualForm.processing" :recently-successful="visualForm.recentlySuccessful">Uložiť</Button>
@@ -173,6 +181,7 @@ import { Input } from '@/Components/Input'
 import TranslatableInput from '@/Components/Input/TranslatableInput.vue'
 import { Label } from '@/Components/Label'
 import { RadioGroup, RadioGroupItem } from '@/Components/RadioGroup'
+import { SwitchControl } from '@/Components/Switch'
 import { TranslatableTextarea } from '@/Components/Textarea'
 import { ToggleGroup, ToggleGroupItem } from '@/Components/ToggleGroup'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/Tooltip'
@@ -187,6 +196,8 @@ import { toRaw, watch } from 'vue'
 const props = defineProps<{
   font: string
   footer: TranslatableString | null
+  header: TranslatableString | null
+  showHeaderLogo: boolean
   alignment: string
   sender: 'system' | 'custom'
   senderName: string | null
@@ -217,6 +228,8 @@ const mailers: Array<SelectOption> = [
 
 const visualForm = useForm(() => ({
   font: props.font,
+  header: props.header,
+  show_header_logo: props.showHeaderLogo,
   footer: props.footer,
   alignment: props.alignment,
 }))

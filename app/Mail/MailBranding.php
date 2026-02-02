@@ -28,7 +28,7 @@ final readonly class MailBranding
             locale: $locale,
             config: $config,
             replacements: $replacements,
-            headerLogo: $account->wideLogo?->url(),
+            headerLogo: $config->showHeaderLogo() ? $account->wideLogo?->url() : null,
         );
     }
 

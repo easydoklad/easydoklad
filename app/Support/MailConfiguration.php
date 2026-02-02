@@ -147,7 +147,7 @@ class MailConfiguration implements Arrayable
         return $this->setLocalized('footer_content', $content);
     }
 
-    public function header(): TranslatableString
+    public function header(): ?TranslatableString
     {
         return $this->localized(
             key: 'header_content',
@@ -155,9 +155,26 @@ class MailConfiguration implements Arrayable
         );
     }
 
-    public function setHeader(TranslatableString $value): static
+    public function setHeader(?TranslatableString $value): static
     {
         return $this->setLocalized('header_content', $value);
+    }
+
+    public function showHeaderLogo(): bool
+    {
+        return $this->config->boolean(
+            key: 'show_header_logo',
+            default: true,
+        );
+    }
+
+    public function setShowHeaderLogo(bool $show): static
+    {
+        if ($this->showHeaderLogo() !== $show) {
+            $this->config->set('show_header_logo', $show);
+        }
+
+        return $this;
     }
 
     public function invoiceSentSubject(): TranslatableString

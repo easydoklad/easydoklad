@@ -32,6 +32,8 @@ class MailController
         return Inertia::render('Settings/MailPage', [
             'font' => $config->font(),
             'footer' => $config->footer(),
+            'header' => $config->header(),
+            'showHeaderLogo' => $config->showHeaderLogo(),
             'alignment' => $config->alignment(),
             'sender' => $config->sender(),
             'mailer' => $driver = $mailer->string('driver')->value(),
@@ -79,7 +81,9 @@ class MailController
                 MailConfiguration::FONT_ARIAL, MailConfiguration::FONT_HELVETICA,
                 MailConfiguration::FONT_TIMES_NEW_ROMAN, MailConfiguration::FONT_GEORGIA,
             ])],
-            'footer' => ['sometimes', TranslatableRule::make(['string', 'max:1000'])->nullable()],
+            'footer' => ['sometimes', 'nullable', TranslatableRule::make(['string', 'max:1000'])->nullable()],
+            'header' => ['sometimes', 'nullable', TranslatableRule::make(['string', 'max:1000'])->nullable()],
+            'show_header_logo' => ['sometimes', 'boolean'],
             'alignment' => ['sometimes', 'required', 'string', Rule::in([
                 MailConfiguration::ALIGN_LEFT, MailConfiguration::ALIGN_CENTER,
             ])],
@@ -107,7 +111,9 @@ class MailController
         $config = $account->getMailConfiguration();
 
         $patch->present('font', fn (string $font) => $config->setFont($font));
-        $patch->present('footer', fn (?array $footer) => $config->setFooter(TranslatableString::fromArray($footer)));
+        $patch->present('header', fn (?array $value) => $config->setHeader(TranslatableString::fromArray($value)));
+        $patch->present('footer', fn (?array $value) => $config->setFooter(TranslatableString::fromArray($value)));
+        $patch->present('show_header_logo', fn (bool $value) => $config->setShowHeaderLogo($value));
         $patch->present('alignment', fn (string $alignment) => $config->setAlignment($alignment));
         $patch->present('sender_name', fn (?string $name) => $config->setSenderName($name));
         $patch->present('carbon_copy', fn (array $value) => $config->setCarbonCopy($value));

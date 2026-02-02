@@ -62,15 +62,18 @@
                 <tr>
                     <td class="body" width="100%" cellpadding="0" cellspacing="0" style="border: hidden !important;">
                         <table class="inner-body" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation">
+                            @if($branding->headerLogo || $branding->headerContent)
                             <tr>
                                 <td class="header">
                                     @if($branding->headerLogo)
-                                        <img class="logo" src="{{ $branding->headerLogo }}" alt="{{ $branding->headerContent ?: '' }}">
-                                    @else
-                                    {{ $branding->headerContent ?: config('app.name') }}
+                                        <img class="logo" style="margin-bottom: @if($branding->headerContent) 12px @else 0px @endif" src="{{ $branding->headerLogo }}" alt="{{ $branding->headerContent ?: '' }}">
+                                    @endif
+                                    @if($branding->headerContent)
+                                        {!! \App\Support\SafeMarkdownConverter::parse($branding->headerContent) !!}
                                     @endif
                                 </td>
                             </tr>
+                            @endif
 
                             <tr>
                                 <td class="content-cell">
