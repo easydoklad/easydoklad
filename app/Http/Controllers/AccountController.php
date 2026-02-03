@@ -68,7 +68,7 @@ class AccountController
             $account = Account::makeWithDefaults();
             $account->vat_enabled = $request->boolean('vat_enabled');
             $account->default_vat_rate = Arr::get(config('app.default_vat_rates', []), $country->value);
-            
+
             $account->company()->associate($company);
 
             $account->save();
