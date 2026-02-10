@@ -51,15 +51,15 @@
           Prijatím tejto pozvánky získate prístup k firme {{ invitation.account }}.
         </p>
 
-        <Tabs v-if="invitation.guest" default-value="create-account" class="w-full mt-8">
+        <Tabs v-if="invitation.guest" default-value="connect-account" class="w-full mt-8">
           <TabsList class="flex w-full mb-4">
-            <TabsTrigger value="create-account" class="flex-1 justify-center">Vytvoriť nový účet</TabsTrigger>
-            <TabsTrigger value="connect-account" class="flex-1 justify-center">Pripojiť k existujúcemu účtu</TabsTrigger>
+            <TabsTrigger value="connect-account" class="flex-1 justify-center">Mám prihlasovacie údaje</TabsTrigger>
+            <TabsTrigger value="create-account" class="flex-1 justify-center">Nemám prihlasovacie údaje</TabsTrigger>
           </TabsList>
 
           <TabsContent value="create-account">
             <p class="text-muted-foreground text-sm/relaxed text-center">
-              Ak ešte nemáte účet v službe easyDoklad, teraz je správny čas na vytvorenie. Po vytvorení účtu získate prístup k firme <strong>{{ invitation.account }}</strong>.
+              Ak ešte nemáte prihlasovacie údaje, teraz je ten správny čas na vytvorenie účtu. Po vytvorení získate prístup k firme <strong>{{ invitation.account }}</strong>.
             </p>
 
             <form @submit.prevent="createAccount" class="flex flex-col gap-6 mt-6">
@@ -107,7 +107,7 @@
 
           <TabsContent value="connect-account" class="flex flex-col">
             <p class="text-muted-foreground text-sm/relaxed text-center">
-              Ak už účet v službe easyDoklad máte, pripojte si firmu <strong>{{ invitation.account }}</strong> k vášmu existujúcemu účtu.
+              Ak už máte prihlasovacie údaje, pripojte si firmu <strong>{{ invitation.account }}</strong> k vášmu existujúcemu účtu. Stačí, že sa prihlásite do služby easyDoklad vašimi prihlasovacími údajmi.
             </p>
 
             <LinkButton class="w-full max-w-xs mx-auto mt-4" :href="route('login', { _query: { intended: $page.url } })">Prihlásiť sa</LinkButton>
