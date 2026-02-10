@@ -315,17 +315,22 @@ class Invoice extends Model
                     $totalVatInclusive = MoneyUtils::sum($this->currency, ...$lines->map->total_price_vat_inclusive);
                     $totalVatExclusive = MoneyUtils::sum($this->currency, ...$lines->map->total_price_vat_exclusive);
 
+                    $vat = Money::max(Money::zero($this->currency), $totalVatInclusive->minus($totalVatExclusive));
+                    $base = Money::max(Money::zero($this->currency), $totalVatExclusive);
+
                     return new VatBreakdownLine(
                         rate: BigNumber::of($lines[0]->vat_rate),
-                        total: Money::max(Money::zero($this->currency), $totalVatInclusive->minus($totalVatExclusive)),
-                        base: Money::max(Money::zero($this->currency), $totalVatExclusive),
+                        vat: $vat,
+                        base: $base,
+                        total: $totalVatInclusive,
                     );
                 } catch (MoneyMismatchException $e) {
                     throw new RuntimeException($e->getMessage(), previous: $e);
                 }
             })
             ->values()
-            ->sortBy(fn (VatBreakdownLine $line) => $line->rate);
+            ->sortBy(fn (VatBreakdownLine $line) => $line->rate)
+            ->values();
     }
 
     /**

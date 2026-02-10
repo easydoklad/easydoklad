@@ -80,6 +80,7 @@ class InvoiceSerializer
                 'vat_breakdown' => $invoice->getVatBreakdown()->map(fn (VatBreakdownLine $line) => [
                     'rate' => $line->rate,
                     'base' => $this->money($line->base, $options->moneyFormattingLocale),
+                    'vat' => $this->money($line->vat, $options->moneyFormattingLocale),
                     'total' => $this->money($line->total, $options->moneyFormattingLocale),
                 ]),
 

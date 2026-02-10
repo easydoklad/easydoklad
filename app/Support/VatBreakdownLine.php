@@ -9,7 +9,8 @@ readonly class VatBreakdownLine
 {
     public function __construct(
         public BigNumber $rate,
-        public Money $total,
-        public Money $base,
-    ) {}
+        public Money     $vat,
+        public Money     $base,
+        public Money     $total,
+    ) { }
 }

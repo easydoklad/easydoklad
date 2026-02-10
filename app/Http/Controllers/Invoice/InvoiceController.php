@@ -134,7 +134,7 @@ class InvoiceController
             'vatBreakdown' => $invoice->getVatBreakdown()->map(fn (VatBreakdownLine $line) => [
                 'rate' => $line->rate,
                 'base' => $line->base->getMinorAmount(),
-                'total' => $line->total->getMinorAmount(),
+                'total' => $line->vat->getMinorAmount(),
             ]),
             'totalVatInclusive' => $invoice->total_vat_inclusive?->getMinorAmount(),
             'totalVatExclusive' => $invoice->total_vat_exclusive?->getMinorAmount(),

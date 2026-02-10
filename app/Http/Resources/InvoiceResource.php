@@ -50,7 +50,7 @@ class InvoiceResource extends JsonResource
             'vat_breakdown' => $this->getVatBreakdown()->map(fn (VatBreakdownLine $line) => [
                 'rate' => $line->rate->toFloat(),
                 'base' => $line->base->getMinorAmount()->toInt(),
-                'total' => $line->total->getMinorAmount()->toInt(),
+                'total' => $line->vat->getMinorAmount()->toInt(),
             ]),
             'issued_by' => $this->issued_by,
             'issued_by_email' => $this->issued_by_email,
